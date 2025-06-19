@@ -6,7 +6,7 @@ tags: []
 mermaid: true
 ---
 
-> In this article, we’ll explore key considerations when choosing between CLI and SDK tools in real-world DevOps pipelines — specifically through the lens of Azure Machine Learning interfaces.
+> In this article, we’ll explore key considerations when choosing between CLI and SDK tools in real-world DevOps pipelines.
 
 > These are the lessons and best practices I gathered from my recent MLOps production experience, highlighting how both CLI and SDK bring unique strengths to automation, deployment, and maintainability.
 
@@ -22,25 +22,21 @@ When automating tasks in a DevOps environment—especially in MLOps or cloud-nat
 
 Both are viable tools for scripting, deployment, and resource management, but their trade-offs aren’t just technical—they impact developer experience, maintainability, and velocity. The CLI shines for quick, shell-native automation. The SDK, on the other hand, unlocks richer logic, modularity, and better integration into CI/CD workflows.
 
-In this guide, we won’t rehash generic definitions. Instead, we’ll break down what actually matters in field projects:
-
-- Host language & learning curve
-
-- Runtime environment complexity
-
-- Modularity & reusability in pipelines
+I’ll skip the textbook stuff. Here’s what I’ve actually learned from doing it in production.
 
 
 ## Host Language and Learning Curve
-Whether you’re using a CLI or an SDK, you’re not just calling isolated commands or functions — you’re writing scripts or programs that run in a broader context. That context is what we’re calling the host language.
+Whether you’re using a CLI or an SDK, you’re not just calling isolated commands or functions — you’re writing scripts or programs that run in a broader context. That context is what I am referring as *the host language*.
 
 For CLI, the host language is typically a shell environment like Bash (on Linux/macOS) or PowerShell (on Windows). These are powerful, but they come with quirks, especially when handling logic, error control, or cross-platform compatibility.
 
 For SDKs, the host language is usually a full-featured programming language like Python, JavaScript, or Java — depending on what the service provider supports (e.g., Azure ML SDK uses Python).
 
-Why this matters:
+### Why this matters? 
+
 The host language influences your learning curve, how readable and maintainable your scripts are, and how easily you can integrate with other systems (e.g., REST calls, file I/O, logging, etc.).
 
 In other words, choosing between CLI and SDK isn't just about the tool itself — it's also about how comfortable and productive you (or your team) are in the host language that wraps around it.
+
 
 
