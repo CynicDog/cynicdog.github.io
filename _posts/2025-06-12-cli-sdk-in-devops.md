@@ -58,25 +58,14 @@ Even with `requirements.txt`, things can get messy quickly. A single version mis
 
 ### Is `.venv` still the right way to manage environments in CI/CD?
 
-In traditional local development, Python virtual environments (`.venv`) help isolate dependencies, but in modern CI/CD pipelines, their role is less clear. Pipeline runners like GitHub Actions or Azure DevOps agents are supposed to be ephemeral — they spin up fresh environments for each job, then discard them afterward.
+In traditional local development, Python virtual environments (`.venv`) are a handy way to isolate dependencies and avoid conflicts. However, in modern CI/CD pipelines, their role is less clear. Platforms like GitHub Actions or Azure DevOps spin up fresh runner environments for each job and discard them once the job completes. Because of this ephemeral nature, managing a `.venv` inside the pipeline can feel redundant and add unnecessary complexity.
 
-Running `.venv` on such one-off runners feels redundant or cumbersome because:
-
-* The runner itself is supposed to be a clean slate each time
-* Managing `.venv` adds complexity and can slow down the pipeline setup
-* Dependency issues still happen if package versions aren’t strictly managed
+Since each runner starts as a clean slate, setting up a virtual environment within it might slow down the pipeline without delivering significant benefits. Additionally, dependency issues can still arise if package versions aren’t strictly controlled, so `.venv` alone doesn’t guarantee stability.
 
 ### Containers: The modern approach to runtime isolation
 
-Instead of relying on `.venv`, many teams now package SDK-based workflows inside Docker containers:
+To address these challenges, many teams are moving toward packaging SDK-based workflows inside Docker containers. Containers encapsulate the entire runtime, dependencies, and environment in a single, consistent image. This approach works well on CI platforms that support containerized jobs or self-hosted runners and helps avoid polluting the host machine.
 
-* Containers encapsulate the entire runtime, dependencies, and environment consistently
-* They work well on CI platforms that support containerized jobs or self-hosted runners
-* This “frame within a frame” approach avoids polluting the host machine and ensures reproducibility
+Using containers in CI is like running “a frame within a frame” — your workflow runs inside a container, which itself runs on the ephemeral CI runner. This ensures reproducibility and isolates your environment from host inconsistencies.
 
-However, running containers on top of CI runners introduces some overhead and complexity:
-
-* You need to build and maintain container images
-* Startup time can be longer compared to direct CLI or SDK installs
-* Requires familiarity with container tooling and orchestration
-
+That said, running containers introduces some overhead. Building and maintaining container images requires additional effort, and container startup times are often longer than directly installing CLI tools or SDKs on the runner. It also requires some familiarity with container tooling and orchestration, which might add to the learning curve.
