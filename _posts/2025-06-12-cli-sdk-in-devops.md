@@ -12,7 +12,7 @@ mermaid: true
 >
 > 🙄 **tl;dr**: Use CLI for quick, one-off tasks during early development; use SDK for maintainable, semantic workflows in production — unless you're skilled at crafting reusable shell scripts, in which case you can comfortably go with either.
 
-## Introduction
+## 0. Introduction
 
 When automating tasks in a DevOps environment—especially in MLOps or cloud-native workflows—you’re often faced with a fundamental decision:
 
@@ -24,7 +24,7 @@ Both are viable tools for scripting, deployment, and resource management, but th
 
 I’ll skip the textbook stuff. Here’s what I’ve actually learned from doing it in production.
 
-## Host Language 
+## 1. Host Language 
 
 Whether you’re using a CLI or an SDK, you’re not just calling isolated commands or functions — you’re writing scripts or programs that run in a broader context. That context is what I am referring as *the host language*.
 
@@ -38,7 +38,7 @@ The host language influences your learning curve, how readable and maintainable 
 
 In other words, choosing between CLI and SDK isn't just about the tool itself — it's also about how comfortable and productive you (or your team) are in the host language that wraps around it.
 
-## Runtime Setup
+## 2. Runtime Setup
 
 Getting your tools running is often the first headache—and it differs a lot between CLI and SDK.
 
@@ -70,7 +70,7 @@ Using containers in CI is like running “a frame within a frame” — your wor
 
 That said, running containers introduces some overhead. Building and maintaining container images requires additional effort, and container startup times are often longer than directly installing CLI tools or SDKs on the runner. It also requires some familiarity with container tooling and orchestration, which might add to the learning curve.
 
-## Modularity and Reusability
+## 3. Modularity and Reusability
 
 One of the biggest limitations of using CLI is that its output is fundamentally just plain text. Whether it’s JSON, table format, or even written to a file, you still end up with raw strings to work with. For example, if you run a command like `az ml job show` to check a job’s status, you have to parse the JSON output manually, extract specific keys, and write conditional logic around string values like `status="Running"`. Even if you use parsing tools like `jq`, the process remains quite manual and brittle. This quickly becomes dry and hardcoded, lacking semantic meaning.
 
@@ -109,7 +109,7 @@ This offers several benefits:
 * It reduces the need to generate, track, or maintain separate config files.
 * Your pipeline becomes cleaner and easier to manage since configuration lives within the pipeline context and not as separate files.
 
-## Conclusion
+## 4. Conclusion
 
 Choosing CLI or SDK affects how you build and maintain DevOps workflows. Use **CLI** for quick, simple tasks and easy setup. Use **SDK** for complex, reusable, and maintainable automation with richer logic and better error handling.
 
