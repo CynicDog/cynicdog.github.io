@@ -17,7 +17,7 @@ mermaid: true
 > I hope this article provides insights into the development of such microservices and what it's like to work with Azure Aspire. In my experience, Azure Aspire is a real boon for building and composing a microservices application, and I would definitely keep following up the project features and updates. 
 > 
 > So, let's get started!
-
+ 
 ## 0. A first look: Architecture of the application.  
 
 Codes of the application are at: [GitHub Repository](https://github.com/CynicDog/Aspiring-Ollama)
