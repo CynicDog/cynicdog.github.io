@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Choosing Between CLI and SDK in DevOps: A Practical Guide"
-date: 2025-07-12 21:46:01 +09:00
+date: 2025-06-12 21:46:01 +09:00
 tags: []            
 mermaid: true
 ---
