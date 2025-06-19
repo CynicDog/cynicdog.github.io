@@ -38,5 +38,23 @@ The host language influences your learning curve, how readable and maintainable 
 
 In other words, choosing between CLI and SDK isn't just about the tool itself — it's also about how comfortable and productive you (or your team) are in the host language that wraps around it.
 
+## Runtime Setup
 
+Getting your tools to run is often the first headache—and it differs a lot between CLI and SDK.
+
+### CLI: Simple and Lightweight
+
+Setting up the CLI usually just means installing a tool like `az` (Azure CLI) and then adding extensions like `ml`. That’s it. You don’t need to worry about Python environments, dependency trees, or package conflicts. It’s quick, self-contained, and good to go in most CI runners.
+
+### SDK: Fragile and Heavy
+
+The SDK route is a different story. You’ll likely be using Python (especially with tools like Azure ML), which means:
+
+* Installing Python (and matching the expected version)
+* Creating and managing a virtual environment (`.venv`)
+* Installing the SDK and all its dependencies (which often brings along a big, brittle dependency tree)
+
+Even with `requirements.txt`, things get messy fast. A single version mismatch or system conflict can break your entire install. And unlike the CLI, SDKs are tightly coupled to specific runtime expectations—making CI/CD pipelines more fragile unless you freeze everything (and hope nothing upstream changes).
+
+> In short: CLI is faster to get running; SDK demands more setup but gives you more control and flexibility once you're over the hump.
 
