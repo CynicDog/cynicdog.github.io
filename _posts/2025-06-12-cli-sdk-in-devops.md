@@ -82,14 +82,6 @@ In contrast, SDKs provide a much richer and structured programming experience:
 * You can easily write reusable functions and compose modular workflows.
 * Exception handling is semantic and reliable, using specific exception classes instead of parsing error strings.
 
-### Key advantages of SDK over CLI for modularity and reusability:
-
-* **Object-oriented responses**: Work with structured data and methods instead of parsing text.
-* **Semantic error handling**: Catch and handle exceptions with clear classes.
-* **Reusable code**: Build modular functions and workflows that are easier to maintain.
-
-While CLI is simple to get started with, as your automation grows more complex, the SDK’s modularity and semantic features become invaluable for building maintainable and robust CI/CD pipelines.
-
 ### Files Are a Headache in DevOps
 
 When working with CLI-based workflows, managing configuration files (like YAML or JSON) is often a major part of the process. CLI commands typically rely on these files to specify deployment settings, job definitions, or environment configurations.
