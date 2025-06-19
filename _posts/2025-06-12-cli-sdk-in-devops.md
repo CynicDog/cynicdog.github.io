@@ -97,7 +97,7 @@ On the other hand, SDK-based workflows tend to avoid heavy reliance on static fi
 
 This offers several benefits:
 
-* You can centralize sensitive or environment-specific values in CI/CD platform features like Azure DevOps Library or GitHub Actions Secrets.
+* You can centralize sensitive or environment-specific values in CI/CD platform features like Azure DevOps Library or GitHub Actions Secrets and Variables.
 * It reduces the need to generate, track, or maintain separate config files.
 * Your pipeline becomes cleaner and easier to manage since configuration lives within the pipeline context and not as separate files.
 
