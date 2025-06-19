@@ -1,11 +1,14 @@
 ---
 layout: post
-title: Choosing Between CLI and SDK in DevOps: A Practical Guide
+title: "Choosing Between CLI and SDK in DevOps: A Practical Guide"
 date: 2025-07-12 21:46:01 +09:00
-tags: [devops, azure, sdk, cli, automation]
+tags: []            
+mermaid: true
 ---
 
-> In this article, we’ll explore important considerations when choosing between CLI and SDK tools in real-world DevOps pipelines. Along the way, we’ll uncover practical lessons and best practices — including how both CLI and SDK bring unique strengths to automation, deployment, and maintainability.
+> In this article, we’ll explore important considerations when choosing between CLI and SDK tools in real-world DevOps pipelines.
+>
+> Along the way, we’ll uncover practical lessons and best practices — including how both CLI and SDK bring unique strengths to automation, deployment, and maintainability.
 
 
 ## Introduction
@@ -19,5 +22,3 @@ In this guide, we won’t rehash generic definitions. Instead, we’ll break dow
 - **Host language & learning curve**
 - **Runtime environment complexity**
 - **Modularity & reusability in pipelines**
-
-Let’s dive in.
