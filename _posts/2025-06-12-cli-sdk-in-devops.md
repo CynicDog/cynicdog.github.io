@@ -69,3 +69,52 @@ To address these challenges, many teams are moving toward packaging SDK-based wo
 Using containers in CI is like running “a frame within a frame” — your workflow runs inside a container, which itself runs on the ephemeral CI runner. This ensures reproducibility and isolates your environment from host inconsistencies.
 
 That said, running containers introduces some overhead. Building and maintaining container images requires additional effort, and container startup times are often longer than directly installing CLI tools or SDKs on the runner. It also requires some familiarity with container tooling and orchestration, which might add to the learning curve.
+
+## Modularity and Reusability
+
+One of the biggest limitations of using CLI is that its output is fundamentally just plain text. Whether it’s JSON, table format, or even written to a file, you still end up with raw strings to work with. For example, if you run a command like `az ml job show` to check a job’s status, you have to parse the JSON output manually, extract specific keys, and write conditional logic around string values like `status="Running"`. Even if you use parsing tools like `jq`, the process remains quite manual and brittle. This quickly becomes dry and hardcoded, lacking semantic meaning.
+
+Error handling with CLI is also challenging because many errors are sent as unstructured text to standard error (stderr). This forces you to rely on fragile string matching and guesswork to detect failure conditions.
+
+In contrast, SDKs provide a much richer and structured programming experience:
+
+* SDK responses are object instances with clear attributes and methods, allowing you to work with meaningful data rather than raw text.
+* You can easily write reusable functions and compose modular workflows.
+* Exception handling is semantic and reliable, using specific exception classes instead of parsing error strings.
+
+### Key advantages of SDK over CLI for modularity and reusability:
+
+* **Object-oriented responses**: Work with structured data and methods instead of parsing text.
+* **Semantic error handling**: Catch and handle exceptions with clear classes.
+* **Reusable code**: Build modular functions and workflows that are easier to maintain.
+
+While CLI is simple to get started with, as your automation grows more complex, the SDK’s modularity and semantic features become invaluable for building maintainable and robust CI/CD pipelines.
+
+### Files Are a Headache
+
+When working with CLI-based workflows, managing configuration files (like YAML or JSON) is often a major part of the process. CLI commands typically rely on these files to specify deployment settings, job definitions, or environment configurations.
+
+For example, if you need to deploy to different environments such as **production**, **release**, or **development**, you might have to:
+
+* Maintain separate config files for each environment, following a strict naming convention (e.g., `prod.yml`, `dev.yml`).
+* Or dynamically generate these files from templates before each run.
+
+Both approaches add overhead because you need to store, version, and manage these files as pipeline artifacts. This can conflict with the principle of keeping CI/CD runs clean and ephemeral, where ideally no persistent state is carried between runs.
+
+On the other hand, SDK-based workflows tend to avoid heavy reliance on static files. Instead, they build configuration **dynamically in-memory**, using parameters and environment variables passed into the script at runtime.
+
+This offers several benefits:
+
+* You can centralize sensitive or environment-specific values in CI/CD platform features like Azure DevOps Library or GitHub Actions Secrets.
+* It reduces the need to generate, track, or maintain separate config files.
+* Your pipeline becomes cleaner and easier to manage since configuration lives within the pipeline context and not as separate files.
+
+## Conclusion
+
+Choosing CLI or SDK affects how you build and maintain DevOps workflows. Use **CLI** for quick, simple tasks and easy setup. Use **SDK** for complex, reusable, and maintainable automation with richer logic and better error handling.
+
+If you're skilled with shell scripting, either can work, but SDKs usually scale better as projects grow.
+
+Also, think carefully about your runtime environment—virtual environments, containers, or ephemeral runners—to keep pipelines reliable and clean.
+
+With these points in mind, you can choose the right tool and build more effective DevOps pipelines. Happy code 😎 
