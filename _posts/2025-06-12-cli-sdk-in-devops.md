@@ -8,7 +8,7 @@ mermaid: true
 
 > In this article, we’ll explore key considerations when choosing between CLI and SDK tools in real-world DevOps pipelines.
 >
-> These are the lessons and best practices I gathered from my recent MLOps production experience, highlighting how both CLI and SDK bring unique strengths to automation, deployment, and maintainability.
+> These are the lessons and best practices I gathered from my recent MLOps production experience, focusing on how both CLI and SDK bring unique strengths to automation, deployment, and maintainability.
 >
 > 🙄 **tl;dr**: Use CLI for quick, one-off tasks during early development; use SDK for maintainable, semantic workflows in production — unless you're skilled at crafting reusable shell scripts, in which case you can comfortably go with either.
 
