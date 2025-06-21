@@ -16,7 +16,7 @@ mermaid: true
 
 When automating tasks in a DevOps environment—especially in MLOps or cloud-native workflows—you’re often faced with a fundamental decision:
 
-**Should you use the Command-Line Interface (CLI), the Software Development Kit (SDK)?**
+**Should you use the Command-Line Interface (CLI), or the Software Development Kit (SDK)?**
 
 > There is a third option, REST API, which is commonly used in application development for programmatic access but are less commonly invoked directly in CI/CD pipelines, since those pipelines favor scripting tools that wrap API calls for ease and reusability.
 
