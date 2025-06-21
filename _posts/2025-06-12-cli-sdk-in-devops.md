@@ -22,7 +22,7 @@ When automating tasks in a DevOps environment—especially in MLOps or cloud-nat
 
 Both are viable tools for scripting, deployment, and resource management, but their trade-offs aren’t just technical—they impact developer experience, maintainability, and velocity. The CLI shines for quick, shell-native automation. The SDK, on the other hand, unlocks richer logic, modularity, and better integration into CI/CD workflows.
 
-I’ll skip the textbook stuff. Here’s what I’ve actually learned from doing it in production.
+I’ll skip the textbook stuff. Here’s what I’ve actually learned from using those interfaces in production.
 
 ## 1. Host Language 
 
