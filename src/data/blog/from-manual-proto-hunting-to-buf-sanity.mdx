@@ -11,88 +11,60 @@ description: ""
 ---
 > This post was heavily helped by [“Protobuf dependency management with Buf”](https://www.youtube.com/watch?v=OSdQlnoO0og), so big thanks to Mike for hosting the tutorial. 
 >
-> You can find the project repository at: [CynicDog/pokedex-grpc](https://github.com/CynicDog/pokedex-grpc)
+> Repository of my project: [CynicDog/pokedex-grpc](https://github.com/CynicDog/pokedex-grpc)
 
-### Why `buf` and `uv` in 2025 Python Dev?
+### In the summer of 2025…
 
-In the scorching hot midsummer of 2025, there was me — trying to write an xDS server in Python to dynamically configure network policy for a web app with an Envoy sidecar, all running in Docker. I didn’t know much about Protocol Buffers (honestly, I still barely do), all I had was ChatGPT telling me: *“You should collect the proto schemas that Envoy uses for its services.”* So I grabbed things like:
+I was sweating over a gRPC xDS server in Python — aiming to dynamically configure network policies via Envoy sidecars, all running inside Docker. It sounded manageable in theory, until I met my old friend: Protocol Buffers.
 
-* envoy/service/discovery/v3/ads.proto
-* envoy/config/listener/v3/listener.proto
-* envoy/config/route/v3/route.proto
-* ... 
+I didn’t know much about .proto files — and I knew even less about the sprawling dependency graph behind Envoy's APIs. Still, I dove in, collecting schemas like:
 
-I had no idea how hard it would be to generate Python code from these. Turns out, each of these proto files turned out to have their own imports — like `buf/validate/validate.proto`, which depended on yet another, like `google/protobuf/descriptor.proto`. The web of dependencies kept growing, and it quickly became clear how tangled things could get.
+- envoy/service/discovery/v3/ads.proto
+- envoy/config/route/v3/route.proto
+- envoy/config/listener/v3/listener.proto
 
-So I did the only thing I could think of: I followed the imports manually, repo by repo. I downloaded the necessary folders from GitHub — pulling from Google's protos, UDPA, xDS, protoc-gen-validate, and Envoy itself. Eventually, I got everything to compile. And when the Python files finally generated successfully, I was honestly kind of amazed.
+…and quickly hit a wall. Each proto had imports. Those had their own imports. Suddenly I was juggling files like [buf/validate/validate.proto](https://github.com/bufbuild/protovalidate/blob/main/proto/protovalidate/buf/validate/validate.proto), [google/protobuf/descriptor.proto](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/descriptor.proto), and files buried in half a dozen different GitHub repos.
 
-But then I thought: No way. It can’t be like this forever.
-
-I searched for a better way to manage proto dependencies and stumbled upon a YouTube tutorial titled [“Protobuf dependency management with Buf”](https://www.youtube.com/watch?v=OSdQlnoO0og). That’s when I discovered `buf`.
-
-What follows is my humble implementation — and a few lessons learned — as I moved beyond just compiling protos into actually writing a working gRPC server and client in Python. 
-
-Got it — here’s a rewritten version of that section with all code blocks replaced by natural descriptions and links to your GitHub repo (you can fill in the real URLs where needed). It keeps the flow conversational and lightweight, just like the rest of your blog.
+It worked — barely. After manually wrangling folders from Google, UDPA, Envoy, and others, I finally compiled Python bindings using protoc. But it was exhausting.
 
 
-### Lead into a Simple gRPC Service
+### Buf to the Rescue
+I knew this couldn’t scale, so I went looking. That’s when I found Buf — a toolkit that makes Protobuf dependency management a first-class citizen.
 
-So with protobuf, development kinda starts upside down — or head-first. You don’t write Python code first; instead, you start by defining your APIs in a `.proto` file. There, you describe a `service` — kind of like function signatures if you're from the Java world — along with the `message` types (UDTs) that your API takes and returns.
+More importantly, I discovered _Buf Schema Registry (BSR)_ — a centralized place to publish and import proto modules with versioning, docs, and tools. The idea? Stop copying GitHub folders. Just reference remote, versioned protos — and let buf handle the rest.
 
-In my case, I was following the tutorial, and I had a proto file called [`pokedex.proto`](https://github.com/CynicDog/pokedex-grpc/blob/main/proto/pokeapi/v1/pokedex.proto). 
+### Building a Pokémon gRPC API
 
-[At the bottom](https://github.com/CynicDog/pokedex-grpc/blob/d284c1a66c9288a485fbc9215721734ae14c77ec/proto/pokeapi/v1/pokedex.proto#L20) of that file, there’s a message type that pulls in a reference to another proto — `pokemon/v1/types.proto`. That one lives out in the wild on the Buf Registry: [pixelperfect/gametypes](https://buf.build/pixelperfect/gametypes/docs/main:pokemon.v1)
+To put it into practice, I built a lightweight gRPC server and client around Pokémon data. The schema was defined in a file called [`pokedex.proto`](https://github.com/CynicDog/pokedex-grpc/blob/main/proto/pokeapi/v1/pokedex.proto), which imports types from the `pixelperfect/gametypes` module on Buf.
 
-So right there, we’re dealing with a remote dependency. But unlike the chaos I experienced before, this time I used `buf` to manage everything. No more manually downloading and copy-pasting folders from GitHub repos. Just clean, versioned module imports.
+I set up the project using [`uv`](https://github.com/astral-sh/uv), a fast Python environment and packaging tool. It handled my dependencies, created a lockfile, and kept everything reproducible.
 
-To set things up, I created a new Python project using [`uv`](https://github.com/astral-sh/uv). The basic idea was:
+Inside a `proto/` directory, I initialized a Buf module, declared my dependencies in `buf.yaml`, and added a `buf.gen.yaml` file to define how Buf should generate Python code — both for protobuf classes and the gRPC service interfaces.
 
-1. Initialize a project (mine was called `pokedex-grpc`)
-2. Create a `proto/` directory and initialize `buf` inside it
-3. Add a `buf.yaml` with dependency config
-4. Run `buf lint` to check things
-5. Run `buf mod update` to lock dependencies
+Once everything was wired up, I ran Buf’s generator. The result: a clean set of `.py` and `.pyi` files in a [`gen/` folder](https://github.com/CynicDog/pokedex-grpc/tree/main/proto/gen), fully ready to import into Python.
 
-After that, I added a [`buf.gen.yaml`](https://github.com/CynicDog/pokedex-grpc/blob/main/proto/buf.gen.yaml) to tell `buf` how to generate Python code from the protos. This includes both the regular protobuf classes and the gRPC-specific server/client interfaces.
+### Catching Pikachu in gRPC
 
-Once you run the generator, everything ends up in a `/gen` folder — `.py` and `.pyi` files neatly laid out and ready to import from your Python app. No hassle.
+On the server side, [`grpc_server.py`](https://github.com/CynicDog/pokedex-grpc/blob/main/grpc_server.py) implements the `PokedexService`. When it receives a `GetPokemon` request, it returns a hardcoded `Pokemon` object — in this case, Pikachu — built using the external types from Buf’s `gametypes` module.
 
-### The gRPC Server and Client: Catching Pikachu
+The client, [`grpc_client.py`](https://github.com/CynicDog/pokedex-grpc/blob/main/grpc_client.py), sends a request for a Pokémon and prints the response. It uses the auto-generated `PokedexServiceStub` class to make the call and unmarshal the result.
 
-Once the Python files were generated using `buf`, it was time to actually *run* something.
+To try it out, I set the `PYTHONPATH` to include the generated code folder, started the server in one terminal, then ran the client in another. The result: a full Pokémon object with name, types, abilities, moves, and base stats — unmarshalled and printed neatly using Python's protobuf bindings.
 
-The idea was simple:
 
-* Spin up a gRPC server that responds to `GetPokemon` requests
-* Write a lightweight client that queries for a Pokémon 
-* Make sure the stub-based response comes back with all the bells and whistles — name, type, abilities, moves, stats
+### uv: Packaging That Doesn’t Fight Back
 
-I didn’t want to overcomplicate things, so I hardcoded a sample Pikachu response right in the server code.
+For me, Python environments have always been, frankly, painful. `venv` and `pip` clunky and inconsistent, and don’t even get me started on Conda.
 
-#### Server-side
-
-The server ([`grpc_server.py`](https://github.com/CynicDog/pokedex-grpc/blob/main/grpc_server.py)) implements the `PokedexService` from our `pokedex.proto`. It receives a Pokémon name (like "Pikachu") and responds with a `Pokemon` message — populated using types from the external schema we pulled in earlier (`pixelperfect/gametypes`).
-
-#### Client-side
-
-The client ([`grpc_client.py`](https://github.com/CynicDog/pokedex-grpc/blob/main/grpc_client.py)) sends a `GetPokemonRequest`, and prints the response from the server. It uses the generated stub class `PokedexServiceStub` to handle the request/response logic.
-
-To try it yourself, make sure Python can find the generated gRPC modules — those live under `proto/gen`, so you’ll want to set your `PYTHONPATH` to that directory before running anything.
-
-Then, start the server in one terminal and the client in another using `uv run grpc_server.py` and `uv run grpc_client.py`.
-
-The client should return the full Pokémon object — type, abilities, moves, and base stats — unmarshalled and printed nicely, thanks to Python’s protobuf bindings.
-
-### `uv`: The Ultimate Python Project Tool (at least so far, I think)
-
-I always hated Python virtual environments or Conda when it comes to Python package management. As a dev with (shallow) experience in npm, Gradle, or even Maven, it felt so chunky whenever I tried to set up a Python project. But then I came across `uv`.
+But `uv` changed that. It's built in Rust, fast, and reliable. There are experts who know far better than me about `uv`, but simply put: it uses Rust to deliver fast, reliable Python environment and dependency management with deterministic locking that prevents version conflicts and ensures repeatable installs.
 
 Instead of wrestling with confusing virtualenvs, fragmented package installs, and managing multiple config files, `uv` bundles all that pain into one simple, fast, and reliable tool. 
 
-There are experts who know far better than me about `uv`, but simply put: it uses Rust to deliver fast, reliable Python environment and dependency management with deterministic locking that prevents version conflicts and ensures repeatable installs.
 
-### Conclusion
+### Final Thoughts
 
-Using protobuf with `buf` for dependency management and Python with `uv` for environment and package handling has truly enhanced my development experience—something I really didn’t expect in the Python world. I try to be an unopinionated coder without prejudices, but honestly, I hadn’t really loved Python development until now.
+This project started with chaos: manually downloading proto files, untangling dependencies, and praying that `protoc` would run without exploding.
 
-This combination brought me where I wanted to go with much more ease: protobuf’s concise, portable API specifications together with buf’s clean and reliable dependency management, paired with uv’s seamless, reliable packaging and environment management, make Python development smoother and more enjoyable than ever. 
+But it ended with something clean and sustainable:  remote proto modules via Buf and fast environment management via uv has truly enhanced my development joy. 
+
+> Takeaway: If you're building gRPC services in Python, don't fight your protos and Python project setups. Let Buf and uv do the heavy lifting. 
