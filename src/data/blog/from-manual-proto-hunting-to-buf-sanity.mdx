@@ -39,9 +39,9 @@ Got it — here’s a rewritten version of that section with all code blocks rep
 
 So with protobuf, development kinda starts upside down — or head-first. You don’t write Python code first; instead, you start by defining your APIs in a `.proto` file. There, you describe a `service` — kind of like function signatures if you're from the Java world — along with the `message` types (UDTs) that your API takes and returns.
 
-In my case, I was following the tutorial, and I had a proto file called `pokedex.proto` ([proto/pokeapi/v1/pokedex.proto](https://github.com/yourusername/pokedex-grpc/blob/main/proto/pokeapi/v1/pokedex.proto)). 
+In my case, I was following the tutorial, and I had a proto file called [`pokedex.proto`](https://github.com/CynicDog/pokedex-grpc/blob/main/proto/pokeapi/v1/pokedex.proto). 
 
-At the bottom of that file, there’s a message type that pulls in a reference to another proto — `pokemon/v1/types.proto`. That one lives out in the wild on the Buf Registry: [pixelperfect/gametypes](https://buf.build/pixelperfect/gametypes/docs/main:pokemon.v1)
+[At the bottom](https://github.com/CynicDog/pokedex-grpc/blob/d284c1a66c9288a485fbc9215721734ae14c77ec/proto/pokeapi/v1/pokedex.proto#L20) of that file, there’s a message type that pulls in a reference to another proto — `pokemon/v1/types.proto`. That one lives out in the wild on the Buf Registry: [pixelperfect/gametypes](https://buf.build/pixelperfect/gametypes/docs/main:pokemon.v1)
 
 So right there, we’re dealing with a remote dependency. But unlike the chaos I experienced before, this time I used `buf` to manage everything. No more manually downloading and copy-pasting folders from GitHub repos. Just clean, versioned module imports.
 
@@ -53,8 +53,7 @@ To set things up, I created a new Python project using [`uv`](https://github.com
 4. Run `buf lint` to check things
 5. Run `buf mod update` to lock dependencies
 
-After that, I added a `buf.gen.yaml`([proto/buf.gen.yaml](https://github.com/yourusername/pokedex-grpc/blob/main/proto/buf.gen.yaml)
-) to tell `buf` how to generate Python code from the protos. This includes both the regular protobuf classes and the gRPC-specific server/client interfaces.
+After that, I added a [`buf.gen.yaml`](https://github.com/CynicDog/pokedex-grpc/blob/main/proto/buf.gen.yaml) to tell `buf` how to generate Python code from the protos. This includes both the regular protobuf classes and the gRPC-specific server/client interfaces.
 
 Once you run the generator, everything ends up in a `/gen` folder — `.py` and `.pyi` files neatly laid out and ready to import from your Python app. No hassle.
 
@@ -72,11 +71,11 @@ I didn’t want to overcomplicate things, so I hardcoded a sample Pikachu respon
 
 #### Server-side
 
-The server ([`grpc_server.py`](https://github.com/yourusername/pokedex-grpc/blob/main/grpc_server.py)) implements the `PokedexService` from our `pokedex.proto`. It receives a Pokémon name (like "Pikachu") and responds with a `Pokemon` message — populated using types from the external schema we pulled in earlier (`pixelperfect/gametypes`).
+The server ([`grpc_server.py`](https://github.com/CynicDog/pokedex-grpc/blob/main/grpc_server.py)) implements the `PokedexService` from our `pokedex.proto`. It receives a Pokémon name (like "Pikachu") and responds with a `Pokemon` message — populated using types from the external schema we pulled in earlier (`pixelperfect/gametypes`).
 
 #### Client-side
 
-The client ([`grpc_client.py`](https://github.com/yourusername/pokedex-grpc/blob/main/grpc_client.py)) connects to `localhost:50051`, sends a `GetPokemonRequest`, and prints the response from the server. It uses the generated stub class `PokedexServiceStub` to handle the request/response logic.
+The client ([`grpc_client.py`](https://github.com/CynicDog/pokedex-grpc/blob/main/grpc_client.py)) connects to `localhost:50051`, sends a `GetPokemonRequest`, and prints the response from the server. It uses the generated stub class `PokedexServiceStub` to handle the request/response logic.
 
 To try it yourself, make sure Python can find the generated gRPC modules — those live under `proto/gen`, so you’ll want to set your `PYTHONPATH` to that directory before running anything.
 
