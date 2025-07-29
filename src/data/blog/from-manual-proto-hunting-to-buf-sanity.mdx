@@ -18,17 +18,14 @@ In the scorching hot midsummer of 2025, there was me — trying to write an xDS 
 * envoy/service/discovery/v3/ads.proto
 * envoy/config/listener/v3/listener.proto
 * envoy/config/route/v3/route.proto
-* envoy/config/cluster/v3/cluster.proto
-* envoy/config/endpoint/v3/endpoint.proto
+* ... 
 
-I had no idea how hard it would be to generate Python code from these. Turns out, they each import other protos — like validate/validate.proto, which itself imports even more, like google/protobuf/descriptor.proto.
+I had no idea how hard it would be to generate Python code from these. Turns out, each of these proto files turned out to have their own imports — like `buf/validate/validate.proto`, which depended on yet another, like `google/protobuf/descriptor.proto`. The web of dependencies kept growing, and it quickly became clear how tangled things could get.
 
-It was a classic case of dependency hell.
+So I did the only thing I could think of: I followed the imports manually, repo by repo. I downloaded the necessary folders from GitHub — pulling from Google's protos, UDPA, xDS, protoc-gen-validate, and Envoy itself. Eventually, I got everything to compile. And when the Python files finally generated successfully, I was honestly kind of amazed.
 
-Still, I didn’t give up. I traced down every required proto and started downloading folders from GitHub — from multiple projects like Google’s protos, UDPA, xDS, protoc-gen-validate, and of course, Envoy itself. Somehow, miraculously, the compilation worked. And when I finally saw those translated Python files — it felt like witnessing a miracle.
+But then I thought: No way. It can’t be like this forever.
 
-But then I thought: *No way. It can’t be like this forever.*
+I searched for a better way to manage proto dependencies and stumbled upon a YouTube tutorial titled [“Protobuf dependency management with Buf”](https://www.youtube.com/watch?v=OSdQlnoO0og). That’s when I discovered `buf`.
 
-I searched for a better way to manage proto dependencies and stumbled upon a YouTube tutorial titled [“Protobuf dependency management with Buf”](https://www.youtube.com/watch?v=OSdQlnoO0og). That’s when I discovered buf.
-
-What follows is my humble implementation — and a few lessons learned — as I moved beyond just compiling protos into actually writing a working gRPC server and client in Python.
+What follows is my humble implementation — and a few lessons learned — as I moved beyond just compiling protos into actually writing a working gRPC server and client in Python. 
