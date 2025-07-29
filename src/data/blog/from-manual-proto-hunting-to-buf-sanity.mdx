@@ -37,7 +37,7 @@ Got it — here’s a rewritten version of that section with all code blocks rep
 
 So with protobuf, development kinda starts upside down — or head-first, maybe. You don’t write Python code first; instead, you start by defining your APIs in a `.proto` file. There, you describe a `service` — kind of like function signatures if you're from the Java world — along with the `message` types (UDTs) that your API takes and returns.
 
-In my case, I was following the tutorial, and I had a proto file called `pokedex.proto` ([`proto/pokeapi/v1/pokedex.proto`](https://github.com/yourusername/pokedex-grpc/blob/main/proto/pokeapi/v1/pokedex.proto)). 
+In my case, I was following the tutorial, and I had a proto file called `pokedex.proto` ([proto/pokeapi/v1/pokedex.proto](https://github.com/yourusername/pokedex-grpc/blob/main/proto/pokeapi/v1/pokedex.proto)). 
 
 At the bottom of that file, there’s a message type that pulls in a reference to another proto — `pokemon/v1/types.proto`. That one lives out in the wild on the Buf Registry: [pixelperfect/gametypes](https://buf.build/pixelperfect/gametypes/docs/main:pokemon.v1)
 
@@ -51,7 +51,7 @@ To set things up, I created a new Python project using [`uv`](https://github.com
 4. Run `buf lint` to check things
 5. Run `buf mod update` to lock dependencies
 
-After that, I added a `buf.gen.yaml`([`proto/buf.gen.yaml`](https://github.com/yourusername/pokedex-grpc/blob/main/proto/buf.gen.yaml)
+After that, I added a `buf.gen.yaml`([proto/buf.gen.yaml](https://github.com/yourusername/pokedex-grpc/blob/main/proto/buf.gen.yaml)
 ) to tell `buf` how to generate Python code from the protos. This includes both the regular protobuf classes and the gRPC-specific server/client interfaces.
 
 Once you run the generator, everything ends up in a `/gen` folder — `.py` and `.pyi` files neatly laid out and ready to import from your Python app. No hassle.
@@ -70,7 +70,7 @@ I didn’t want to overcomplicate things, so I hardcoded a sample Pikachu respon
 
 #### Server-side
 
-The server ([`grpc_server.py`](https://github.com/yourusername/pokedex-grpc/blob/main/grpc_server.py)) implements the `PokedexService` from our `pokedex.proto`. It receives a Pokémon name (like `"Pikachu"`) and responds with a `Pokemon` message — populated using types from the external schema we pulled in earlier (`pixelperfect/gametypes`).
+The server ([`grpc_server.py`](https://github.com/yourusername/pokedex-grpc/blob/main/grpc_server.py)) implements the `PokedexService` from our `pokedex.proto`. It receives a Pokémon name (like "Pikachu") and responds with a `Pokemon` message — populated using types from the external schema we pulled in earlier (`pixelperfect/gametypes`).
 
 #### Client-side
 
