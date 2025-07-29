@@ -55,7 +55,7 @@ html[data-theme="dark"] {
 }
 
 @utility max-w-app {
-  @apply max-w-4xl xl:max-w-5xl;
+  @apply max-w-3xl xl:max-w-4xl;
 }
 
 .active-nav {
