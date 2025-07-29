@@ -75,7 +75,7 @@ The server ([`grpc_server.py`](https://github.com/CynicDog/pokedex-grpc/blob/mai
 
 #### Client-side
 
-The client ([`grpc_client.py`](https://github.com/CynicDog/pokedex-grpc/blob/main/grpc_client.py)) connects to `localhost:50051`, sends a `GetPokemonRequest`, and prints the response from the server. It uses the generated stub class `PokedexServiceStub` to handle the request/response logic.
+The client ([`grpc_client.py`](https://github.com/CynicDog/pokedex-grpc/blob/main/grpc_client.py)) sends a `GetPokemonRequest`, and prints the response from the server. It uses the generated stub class `PokedexServiceStub` to handle the request/response logic.
 
 To try it yourself, make sure Python can find the generated gRPC modules — those live under `proto/gen`, so you’ll want to set your `PYTHONPATH` to that directory before running anything.
 
