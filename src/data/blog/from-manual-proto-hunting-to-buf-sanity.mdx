@@ -29,3 +29,92 @@ But then I thought: No way. It can’t be like this forever.
 I searched for a better way to manage proto dependencies and stumbled upon a YouTube tutorial titled [“Protobuf dependency management with Buf”](https://www.youtube.com/watch?v=OSdQlnoO0og). That’s when I discovered `buf`.
 
 What follows is my humble implementation — and a few lessons learned — as I moved beyond just compiling protos into actually writing a working gRPC server and client in Python. 
+
+### Lead into a Simple gRPC Service
+
+So with protobuf, development kinda starts upside down — or head-first, maybe. You begin not with Python code, but by writing APIs in a `.proto` file. There, you define the `service` — which sort of looks like function signatures if you're coming from Java — and then the `message` types, which are like UDTs (user-defined types) that your APIs accept and return.
+
+In our case, we had a ready-made proto file from the tutorial called `pokedex.proto`, which looks like this:
+
+```proto
+syntax = "proto3";
+package pokeapi.v1;
+import "pokemon/v1/types.proto";
+
+service PokedexService {
+  rpc GetPokemon(GetPokemonRequest) returns (GetPokemonResponse);
+}
+message GetPokemonRequest {
+  string name = 1;
+}
+message GetPokemonResponse {
+  Pokemon pokemon = 1;
+}
+message Pokemon {
+  pokemon.v1.Pokemon pokemon = 1;
+}
+```
+
+See that last message — `Pokemon`? It uses another `Pokemon` type from an external proto file: `pokemon/v1/types.proto`. That file isn’t ours — it lives out there on the Buf Registry at [buf.build/pixelperfect/gametypes](https://buf.build/pixelperfect/gametypes/docs/main:pokemon.v1). That’s where dependency management comes in, and this time we’re not doing it manually. We’re using `buf`, a tool made to clean up that whole messy proto-import scene.
+
+Now, I’m not doing anything fancy here. Just a simple use of the `buf` CLI to create a Python gRPC app that can query for a Pokémon by name using a generated stub. So I’ll keep the steps minimal.
+
+First, initialize a Python project with `uv` (don’t worry, I’ll explain *why* `uv` later). You can do that like this:
+
+```bash
+uv init pokedex-grpc
+```
+
+Then, run:
+
+```bash
+mkdir proto && cd proto 
+buf config init
+```
+
+This will generate a clean `buf.yaml` file where you define which external proto schemas you want to import into your proto files. It might look like this:
+
+```yaml
+# For details on buf.yaml configuration, visit https://buf.build/docs/configuration/v2/buf-yaml
+version: v2
+deps:
+  - buf.build/pixelperfect/gametypes  # 👈 this pulls in the external schema you need
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE
+```
+
+After that, run:
+
+```bash
+buf lint
+```
+
+to make sure everything's sane, and then:
+
+```bash
+buf mod update
+```
+
+This creates a `buf.lock` file that pins the exact versions (technically: content digests) of the remote proto modules listed in your `deps`. It also downloads them to your local machine — somewhere like `~/.cache/buf` on Linux/macOS or `%USERPROFILE%\AppData\Local\buf\cache` on Windows.
+
+Next, let’s tell `buf` how to generate Python code from our `pokedex.proto`. We do that with a `buf.gen.yaml` file that looks like this:
+
+```yaml
+version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/python
+    out: ./gen
+    include_imports: true
+  - remote: buf.build/protocolbuffers/pyi
+    out: ./gen
+    include_imports: true
+  - remote: buf.build/grpc/python:v1.74.0
+    out: ./gen
+    include_imports: true
+```
+
+This will generate `.py` and `.pyi` files under the `gen/` directory — both the message classes and the gRPC client/server interfaces.
