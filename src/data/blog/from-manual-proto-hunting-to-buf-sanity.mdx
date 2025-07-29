@@ -1,0 +1,34 @@
+---
+title: From Manual Proto Hunting to Buf Sanity — And a Pikachu Too
+author: eunsang
+pubDatetime: 2025-07-29T01:00:00Z
+modDatetime: 2025-07-29T01:00:00Z
+slug: from-manual-proto-hunting-to-buf-sanity
+featured: false
+draft: false
+tags: [grpc, protobuf, python, buf, uv, envoy, xds]
+description: ""
+---
+> This post was heavily helped by [“Protobuf dependency management with Buf”](https://www.youtube.com/watch?v=OSdQlnoO0og), so big thanks to Mike for hosting the tutorial. 
+
+### Why `buf` and `uv` in 2025 Python Dev?
+
+In the scorching hot midsummer of 2025, there was me — trying to write an xDS server in Python to dynamically configure network policy for a web app with an Envoy sidecar, all running in Docker. I didn’t know much about Protocol Buffers (honestly, I still barely do). All I had was ChatGPT telling me: *“You should collect the proto schemas that Envoy uses for its services.”* So I grabbed things like:
+
+* envoy/service/discovery/v3/ads.proto
+* envoy/config/listener/v3/listener.proto
+* envoy/config/route/v3/route.proto
+* envoy/config/cluster/v3/cluster.proto
+* envoy/config/endpoint/v3/endpoint.proto
+
+I had no idea how hard it would be to generate Python code from these. Turns out, they each import other protos — like validate/validate.proto, which itself imports even more, like google/protobuf/descriptor.proto.
+
+It was a classic case of dependency hell.
+
+Still, I didn’t give up. I traced down every required proto and started downloading folders from GitHub — from multiple projects like Google’s protos, UDPA, xDS, protoc-gen-validate, and of course, Envoy itself. Somehow, miraculously, the compilation worked. And when I finally saw those translated Python files — it felt like witnessing a miracle.
+
+But then I thought: *No way. It can’t be like this forever.*
+
+I searched for a better way to manage proto dependencies and stumbled upon a YouTube tutorial titled [“Protobuf dependency management with Buf”](https://www.youtube.com/watch?v=OSdQlnoO0og). That’s when I discovered buf.
+
+What follows is my humble implementation — and a few lessons learned — as I moved beyond just compiling protos into actually writing a working gRPC server and client in Python.
