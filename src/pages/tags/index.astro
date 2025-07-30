@@ -3,9 +3,8 @@ import { getCollection } from "astro:content";
 import Main from "@/layouts/Main.astro";
 import Layout from "@/layouts/Layout.astro";
 import Tag from "@/components/Tag.astro";
-import SVG from "@/components/SVG.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
-import ProfilePicturesOfPeople from "@/assets/profile-pictures-of-people.svg"
+
 import { SITE } from "@/config";
 
 const posts = await getCollection("blog");
@@ -15,11 +14,6 @@ let tags = getUniqueTags(posts);
 
 <Layout title={`Tags | ${SITE.title}`}>
   <Main pageTitle="Tags" pageDesc="All the tags used in posts.">
-    <SVG
-      src={ProfilePicturesOfPeople}
-      alt=""
-      caption=""
-    />
     <ul>
       {tags.map(({ tag, tagName }) => <Tag {tag} {tagName} size="lg" />)}
     </ul>

@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Search from "@/pages/search.astro";
 import Archives from "@/pages/archives/index.astro";
+import Tags from "@/pages/tags/index.astro";
 import Socials from "@/components/Socials.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Card from "@/components/Card.astro";
@@ -17,6 +18,7 @@ import { SOCIALS } from "@/constants";
 
 import SmallManStandingBetweenGiantBooks from "@/assets/small-man-standing-between-giant-books.svg"
 import BalancingConcentrationAndTaskManagementWithHeadphones from "@/assets/balancing-concentration-and-task-management-with-headphones.svg"
+import ProfilePicturesOfPeople from "@/assets/profile-pictures-of-people.svg"
 
 const posts = await getCollection("blog");
 
@@ -60,6 +62,14 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     </section>
     <Archives />
 
+    <section id="hero" class="pt-2 pb-4">
+      <SVG
+        src={ProfilePicturesOfPeople}
+        alt=""
+        caption=""
+      />
+    </section>
+    <Tags />
 
   </main>
 </Layout>
