@@ -110,10 +110,14 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     width: 100%;
     height: auto;
   }
-  :global(.custom-svg .custom-element) {
-    transition: filter 0.3s ease;
-  }
   :global(.custom-svg .custom-element:hover) {
-    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
+    animation: wiggle 0.4s ease-in-out;
+  }
+  @keyframes wiggle {
+    0% { transform: rotate(0); }
+    25% { transform: rotate(2deg); }
+    50% { transform: rotate(-2deg); }
+    75% { transform: rotate(2deg); }
+    100% { transform: rotate(0); }
   }
 </style>
