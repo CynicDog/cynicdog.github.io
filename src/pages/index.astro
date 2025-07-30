@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Card from "@/components/Card.astro";
@@ -53,7 +53,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       </LinkButton>
     </div>
   </main>
-  <Header />
+  <Footer />
 </Layout>
 
 <script>

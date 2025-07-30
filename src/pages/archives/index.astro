@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Main from "@/layouts/Main.astro";
 import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
 import getPostsByGroupCondition from "@/utils/getPostsByGroupCondition";
 import { SITE } from "@/config";
@@ -77,5 +77,5 @@ const months = [
         ))
     }
   </Main>
-  <Header />
+  <Footer />
 </Layout>
