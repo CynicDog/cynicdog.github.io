@@ -12,10 +12,12 @@ const svgUrl = typeof src === 'string' ? src : src.src;
 ---
 
 <figure class="w-full max-w-full overflow-hidden my-8">
-  <div class="generic-svg w-full max-w-full overflow-hidden" data-svg-url={src} aria-label={alt}>
+  <div class="generic-svg w-full max-w-full overflow-hidden" data-svg-url={svgUrl} aria-label={alt}>
     <img src={svgUrl} alt={alt} style="display: none;" />
   </div>
-  {caption && <figcaption class="text-center mt-4 text-sm text-skin-base italic">{caption}</figcaption>}
+  {caption && (
+    <figcaption class="text-center mt-4 text-sm text-skin-base italic">{caption}</figcaption>
+  )}
 </figure>
 
 <script is:inline>
@@ -23,12 +25,18 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     const containers = document.querySelectorAll('.generic-svg');
     containers.forEach(async (container) => {
       const svgUrl = container.dataset.svgUrl;
+      if (!svgUrl) return;
+
       try {
         const response = await fetch(svgUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const svgText = await response.text();
         container.innerHTML = svgText;
       } catch (err) {
-        container.innerHTML = `<svg><text x="0" y="15" fill="red">Error loading image</text></svg>`;
+        console.error('Failed to load generic SVG:', err);
+        container.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 40">
+          <text x="0" y="20" fill="red">Error loading SVG</text>
+        </svg>`;
       }
     });
   }
@@ -36,3 +44,10 @@ const svgUrl = typeof src === 'string' ? src : src.src;
   document.addEventListener('DOMContentLoaded', initGenericSVG);
   document.addEventListener('astro:page-load', initGenericSVG);
 </script>
+
+<style>
+  :global(.generic-svg svg) {
+    width: 100%;
+    height: auto;
+  }
+</style>
