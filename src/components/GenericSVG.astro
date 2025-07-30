@@ -8,11 +8,12 @@ interface Props {
 }
 
 const { src, alt, caption } = Astro.props;
+const svgUrl = typeof src === 'string' ? src : src.src;
 ---
 
 <figure class="w-full max-w-full overflow-hidden my-8">
   <div class="generic-svg w-full max-w-full overflow-hidden" data-svg-url={src} aria-label={alt}>
-    <img src={src} alt={alt} style="display: none;" />
+    <img src={svgUrl} alt={alt} style="display: none;" />
   </div>
   {caption && <figcaption class="text-center mt-4 text-sm text-skin-base italic">{caption}</figcaption>}
 </figure>
