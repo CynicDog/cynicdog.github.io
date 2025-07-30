@@ -1,0 +1,33 @@
+:global(.excalidraw-svg .fill-skin-base) {
+    fill: rgb(34, 46, 54); /* #222E36 - dark for light mode */
+}
+@media (prefers-color-scheme: dark) {
+    :global(.excalidraw-svg .fill-skin-base) {
+        fill: rgb(175, 176, 177); /* #AFB0B1 - light for dark mode */
+    }
+}
+
+:global(.excalidraw-svg .fill-skin-soft) {
+    fill: rgb(40, 39, 40); /* #282728 - dark for light mode */
+}
+@media (prefers-color-scheme: dark) {
+    :global(.excalidraw-svg .fill-skin-soft) {
+        fill: rgb(175, 176, 177); /* #AFB0B1 - light for dark mode */
+    }
+}
+
+:global(.excalidraw-svg .stroke-skin-accent) {
+    stroke: rgb(26, 26, 26); /* #1A1A1A - blackish for light mode */
+}
+@media (prefers-color-scheme: dark) {
+    :global(.excalidraw-svg .stroke-skin-accent) {
+        stroke: rgb(245, 245, 245); /* #F5F5F5 - whitish for dark mode */
+    }
+}
+
+:global(.excalidraw-svg .excalidraw-element) {
+    transition: all 0.3s ease-in-out;
+}
+:global(.excalidraw-svg .excalidraw-element:hover) {
+    opacity: 0.8;
+}
