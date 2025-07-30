@@ -20,7 +20,7 @@ const svgUrl = typeof src === 'string' ? src : src.src;
 </figure>
 
 <script is:inline>
-  function modifySvg(svgString) {
+  function modifySvg(svgString, isDark) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgString, 'image/svg+xml');
     const svg = doc.documentElement;
@@ -29,19 +29,23 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     svg.setAttribute('height', '100%');
     svg.classList.add('w-full', 'h-auto');
 
+    const fillBase = isDark ? 'rgb(175, 176, 177)' : 'rgb(40, 39, 40)';
+    const fillSoft = isDark ? 'rgb(175, 176, 177)' : 'rgb(40, 39, 40)';
+    const strokeAccent = isDark ? 'rgb(245, 245, 245)' : 'rgb(26, 26, 26)';
+
     doc.querySelectorAll('text').forEach((text) => {
       text.removeAttribute('fill');
-      text.classList.add('fill-skin-base');
+      text.setAttribute('fill', fillBase);
     });
 
     doc.querySelectorAll('rect').forEach((rect) => {
       rect.removeAttribute('fill');
-      rect.classList.add('fill-skin-soft');
+      rect.setAttribute('fill', fillSoft);
     });
 
     doc.querySelectorAll('path').forEach((path) => {
       path.removeAttribute('stroke');
-      path.classList.add('stroke-skin-accent');
+      path.setAttribute('stroke', strokeAccent);
     });
 
     doc.querySelectorAll('g').forEach((g) => {
@@ -64,12 +68,14 @@ const svgUrl = typeof src === 'string' ? src : src.src;
 
     const loadAndInject = async (container) => {
       const svgUrl = container.dataset.svgUrl;
+      const isDark = document.documentElement.classList.contains('dark');
+
       if (svgUrl) {
         try {
           const response = await fetch(svgUrl);
           if (!response.ok) throw new Error(`Failed to fetch SVG: ${response.statusText}`);
           const svgData = await response.text();
-          const modifiedSvg = modifySvg(svgData);
+          const modifiedSvg = modifySvg(svgData, isDark);
           container.innerHTML = modifiedSvg;
         } catch (error) {
           console.error('Error in CustomSVG component:', error);
@@ -79,7 +85,6 @@ const svgUrl = typeof src === 'string' ? src : src.src;
         }
       }
     };
-
     svgContainers.forEach(container => loadAndInject(container));
 
     // Re-inject SVGs when theme changes
@@ -96,16 +101,6 @@ const svgUrl = typeof src === 'string' ? src : src.src;
   :global(.custom-svg svg) {
     width: 100%;
     height: auto;
-  }
-
-  :global(.custom-svg .fill-skin-base) {
-    @apply fill-[rgb(40, 39, 40)] dark:fill-[rgb(175, 176, 177)];
-  }
-  :global(.custom-svg .fill-skin-soft) {
-    @apply fill-[rgb(40, 39, 40)] dark:fill-[rgb(175, 176, 177)];
-  }
-  :global(.custom-svg .stroke-skin-accent) {
-    @apply stroke-[rgb(26, 26, 26)] dark:stroke-[rgb(245, 245, 245)];
   }
   :global(.custom-svg .custom-element) {
       transition: all 0.3s ease-in-out;
