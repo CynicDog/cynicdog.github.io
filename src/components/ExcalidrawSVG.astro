@@ -51,40 +51,27 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     return new XMLSerializer().serializeToString(doc);
   }
 
-  async function loadAndInjectSvg(container) {
-    const svgUrl = container.dataset.svgUrl;
-    if (!svgUrl) return;
-
-    try {
-      const response = await fetch(svgUrl);
-      if (!response.ok) throw new Error(`Failed to fetch SVG: ${response.statusText}`);
-      const svgData = await response.text();
-      const modifiedSvg = modifySvg(svgData);
-      container.innerHTML = modifiedSvg;
-    } catch (err) {
-      console.error("SVG Load Error:", err);
-      container.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <text x="10" y="50" fill="red">Error loading SVG</text>
-      </svg>`;
-    }
-  }
-
-  async function initExcalidrawSVG() {
-    const containers = document.querySelectorAll('.excalidraw-svg');
-    for (const container of containers) {
-      await loadAndInjectSvg(container);
-
-      // Watch for theme changes on <html>
-      const observer = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          if (mutation.attributeName === 'class') {
-            loadAndInjectSvg(container); // Re-render SVG on theme change
+  function initExcalidrawSVG() {
+    const svgContainers = document.querySelectorAll('.excalidraw-svg');
+    svgContainers.forEach(async (container) => {
+      const svgUrl = container.dataset.svgUrl;
+      if (svgUrl) {
+        try {
+          const response = await fetch(svgUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch SVG: ${response.statusText}`);
           }
+          const svgData = await response.text();
+          const modifiedSvg = modifySvg(svgData);
+          container.innerHTML = modifiedSvg;
+        } catch (error) {
+          console.error('Error in ExcalidrawSVG component:', error);
+          container.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+            <text x="10" y="50" fill="red">Error loading SVG</text>
+          </svg>`;
         }
-      });
-
-      observer.observe(document.documentElement, { attributes: true });
-    }
+      }
+    });
   }
 
   document.addEventListener('DOMContentLoaded', initExcalidrawSVG);
@@ -97,33 +84,37 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     height: auto;
   }
 
-  /* Light mode */
-  :global(html.light .fill-skin-base) {
+  :global(.excalidraw-svg svg) {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Light theme (default) */
+  :global(html.light .excalidraw-svg .fill-skin-base) {
     fill: rgb(34, 46, 54); /* #222E36 */
   }
-  :global(html.light .fill-skin-soft) {
+  :global(html.light .excalidraw-svg .fill-skin-soft) {
     fill: rgb(40, 39, 40); /* #282728 */
   }
-  :global(html.light .stroke-skin-accent) {
+  :global(html.light .excalidraw-svg .stroke-skin-accent) {
     stroke: rgb(26, 26, 26); /* #1A1A1A */
   }
 
-  /* Dark mode */
-  :global(html.dark .fill-skin-base) {
+  /* Dark theme */
+  :global(html.dark .excalidraw-svg .fill-skin-base) {
     fill: rgb(175, 176, 177); /* #AFB0B1 */
   }
-  :global(html.dark .fill-skin-soft) {
+  :global(html.dark .excalidraw-svg .fill-skin-soft) {
     fill: rgb(175, 176, 177); /* #AFB0B1 */
   }
-  :global(html.dark .stroke-skin-accent) {
+  :global(html.dark .excalidraw-svg .stroke-skin-accent) {
     stroke: rgb(245, 245, 245); /* #F5F5F5 */
   }
 
-  :global(.excalidraw-element) {
+  :global(.excalidraw-svg .excalidraw-element) {
     transition: all 0.3s ease-in-out;
   }
-
-  :global(.excalidraw-element:hover) {
+  :global(.excalidraw-svg .excalidraw-element:hover) {
     opacity: 0.8;
   }
 </style>
