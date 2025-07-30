@@ -1,0 +1,37 @@
+---
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata | string;
+  alt: string;
+  caption?: string;
+}
+
+const { src, alt, caption } = Astro.props;
+---
+
+<figure class="w-full max-w-full overflow-hidden my-8">
+  <div class="generic-svg w-full max-w-full overflow-hidden" data-svg-url={src} aria-label={alt}>
+    <img src={src} alt={alt} style="display: none;" />
+  </div>
+  {caption && <figcaption class="text-center mt-4 text-sm text-skin-base italic">{caption}</figcaption>}
+</figure>
+
+<script is:inline>
+  function initGenericSVG() {
+    const containers = document.querySelectorAll('.generic-svg');
+    containers.forEach(async (container) => {
+      const svgUrl = container.dataset.svgUrl;
+      try {
+        const response = await fetch(svgUrl);
+        const svgText = await response.text();
+        container.innerHTML = svgText;
+      } catch (err) {
+        container.innerHTML = `<svg><text x="0" y="15" fill="red">Error loading image</text></svg>`;
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initGenericSVG);
+  document.addEventListener('astro:page-load', initGenericSVG);
+</script>
