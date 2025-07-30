@@ -84,37 +84,38 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     height: auto;
   }
 
-  :global(.excalidraw-svg svg) {
-    width: 100%;
-    height: auto;
+  :global(.excalidraw-svg .fill-skin-base) {
+      fill: rgb(34, 46, 54); /* #222E36 - dark for light mode */
+  }
+  @media (prefers-color-scheme: dark) {
+      :global(.excalidraw-svg .fill-skin-base) {
+          fill: rgb(175, 176, 177); /* #AFB0B1 - light for dark mode */
+      }
   }
 
-  /* Light theme (default) */
-  :global(html.light .excalidraw-svg .fill-skin-base) {
-    fill: rgb(34, 46, 54); /* #222E36 */
+  :global(.excalidraw-svg .fill-skin-soft) {
+      fill: rgb(40, 39, 40); /* #282728 - dark for light mode */
   }
-  :global(html.light .excalidraw-svg .fill-skin-soft) {
-    fill: rgb(40, 39, 40); /* #282728 */
-  }
-  :global(html.light .excalidraw-svg .stroke-skin-accent) {
-    stroke: rgb(26, 26, 26); /* #1A1A1A */
+  @media (prefers-color-scheme: dark) {
+      :global(.excalidraw-svg .fill-skin-soft) {
+          fill: rgb(175, 176, 177); /* #AFB0B1 - light for dark mode */
+      }
   }
 
-  /* Dark theme */
-  :global(html.dark .excalidraw-svg .fill-skin-base) {
-    fill: rgb(175, 176, 177); /* #AFB0B1 */
+  :global(.excalidraw-svg .stroke-skin-accent) {
+      stroke: rgb(26, 26, 26); /* #1A1A1A - blackish for light mode */
   }
-  :global(html.dark .excalidraw-svg .fill-skin-soft) {
-    fill: rgb(175, 176, 177); /* #AFB0B1 */
-  }
-  :global(html.dark .excalidraw-svg .stroke-skin-accent) {
-    stroke: rgb(245, 245, 245); /* #F5F5F5 */
+  @media (prefers-color-scheme: dark) {
+      :global(.excalidraw-svg .stroke-skin-accent) {
+          stroke: rgb(245, 245, 245); /* #F5F5F5 - whitish for dark mode */
+      }
   }
 
   :global(.excalidraw-svg .excalidraw-element) {
-    transition: all 0.3s ease-in-out;
+      transition: all 0.3s ease-in-out;
   }
   :global(.excalidraw-svg .excalidraw-element:hover) {
-    opacity: 0.8;
+      opacity: 0.8;
   }
+
 </style>
