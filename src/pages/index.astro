@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Search from "@/pages/search.astro";
+import Archives from "@/pages/archives/index.astro";
 import Socials from "@/components/Socials.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Card from "@/components/Card.astro";
@@ -47,11 +48,9 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         </section>
       )
     }
-    <div class="my-4 text-center">
-      <LinkButton href="/archives/">
-        Archives
-      </LinkButton>
-    </div>
+
+    <Archives />
+
 
   </main>
 </Layout>
