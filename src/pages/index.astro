@@ -11,10 +11,12 @@ import SVG from "@/components/SVG.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
 import IconRss from "@/assets/icons/IconRss.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
-import SmallManStandingBetweenGiantBooks from "@/assets/small-man-standing-between-giant-books.svg"
 
 import { SITE } from "@/config";
 import { SOCIALS } from "@/constants";
+
+import SmallManStandingBetweenGiantBooks from "@/assets/small-man-standing-between-giant-books.svg"
+import BalancingConcentrationAndTaskManagementWithHeadphones from "@/assets/balancing-concentration-and-task-management-with-headphones.svg"
 
 const posts = await getCollection("blog");
 
@@ -38,7 +40,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     {
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide">Recent Posts</h2>
+          <h1 class="text-2xl font-semibold tracking-wide">Recent Posts</h1>
           <ul>
             {recentPosts.map(
               (data, index) =>
@@ -49,6 +51,11 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       )
     }
 
+    <SVG
+      src={BalancingConcentrationAndTaskManagementWithHeadphones}
+      alt=""
+      caption=""
+    />
     <Archives />
 
 
