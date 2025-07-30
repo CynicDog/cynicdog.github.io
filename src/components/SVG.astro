@@ -86,9 +86,7 @@ const svgUrl = typeof src === 'string' ? src : src.src;
           container.innerHTML = modifiedSvg;
         } catch (error) {
           console.error('Error in CustomSVG component:', error);
-          container.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-            <text x="10" y="50" fill="red">Error loading SVG</text>
-          </svg>`;
+          container.innerHTML = `<span aria-hidden="true">¯\_(ツ)_/¯</span>`;
         }
       }
     };
