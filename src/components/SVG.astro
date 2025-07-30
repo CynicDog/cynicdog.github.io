@@ -51,16 +51,23 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     return new XMLSerializer().serializeToString(doc);
   }
 
+  function onThemeChange(callback) {
+    const html = document.documentElement;
+    const observer = new MutationObserver(() => {
+      callback();
+    });
+    observer.observe(html, { attributes: true, attributeFilter: ['class'] });
+  }
+
   function initCustomSVG() {
     const svgContainers = document.querySelectorAll('.custom-svg');
-    svgContainers.forEach(async (container) => {
+
+    const loadAndInject = async (container) => {
       const svgUrl = container.dataset.svgUrl;
       if (svgUrl) {
         try {
           const response = await fetch(svgUrl);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch SVG: ${response.statusText}`);
-          }
+          if (!response.ok) throw new Error(`Failed to fetch SVG: ${response.statusText}`);
           const svgData = await response.text();
           const modifiedSvg = modifySvg(svgData);
           container.innerHTML = modifiedSvg;
@@ -71,6 +78,13 @@ const svgUrl = typeof src === 'string' ? src : src.src;
           </svg>`;
         }
       }
+    };
+
+    svgContainers.forEach(container => loadAndInject(container));
+
+    // Re-inject SVGs when theme changes
+    onThemeChange(() => {
+      svgContainers.forEach(container => loadAndInject(container));
     });
   }
 
