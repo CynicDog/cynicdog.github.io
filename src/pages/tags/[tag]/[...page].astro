@@ -6,6 +6,8 @@ import Layout from "@/layouts/Layout.astro";
 import Card from "@/components/Card.astro";
 import Pagination from "@/components/Pagination.astro";
 import BackButton from "@/components/BackButton.astro";
+import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
+import LinkButton from "@/components/LinkButton.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
 import getPostsByTag from "@/utils/getPostsByTag";
 import { SITE } from "@/config";
@@ -31,8 +33,15 @@ const { page, tagName } = Astro.props;
 ---
 
 <Layout title={`Tag: ${tagName} | ${SITE.title}`}>
-  <div class="my-6">
-    <BackButton />
+  <div class="mx-auto my-4 flex w-full max-w-app items-center justify-start px-2">
+    <LinkButton
+      id="back-button"
+      href="/"
+      class="focus-outline mt-8 mb-2 flex hover:text-foreground/75"
+    >
+      <IconChevronLeft class="inline-block size-6 rtl:rotate-180" />
+      <span>Home</span>
+    </LinkButton>
   </div>
   <Main
     pageTitle={[`Tag:`, `${tagName}`]}
