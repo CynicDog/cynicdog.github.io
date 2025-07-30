@@ -21,7 +21,6 @@ const { page } = Astro.props;
 ---
 
 <Layout title={`Posts | ${SITE.title}`}>
-  <Header />
   <Main pageTitle="Posts" pageDesc="">
     <SVG
       src={BalancingConcentrationAndTaskManagementWithHeadphones}
@@ -34,6 +33,6 @@ const { page } = Astro.props;
   </Main>
 
   <Pagination {page} />
-
+  <Header />
   <Footer noMarginTop={page.lastPage > 1} />
 </Layout>

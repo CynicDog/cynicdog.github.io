@@ -32,7 +32,6 @@ const { page, tagName } = Astro.props;
 ---
 
 <Layout title={`Tag: ${tagName} | ${SITE.title}`}>
-  <Header />
   <Main
     pageTitle={[`Tag:`, `${tagName}`]}
     titleTransition={tag}
@@ -45,6 +44,6 @@ const { page, tagName } = Astro.props;
   </Main>
 
   <Pagination {page} />
-
+  <Header />
   <Footer noMarginTop={page.lastPage > 1} />
 </Layout>

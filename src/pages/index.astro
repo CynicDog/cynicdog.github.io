@@ -24,7 +24,6 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 ---
 
 <Layout>
-  <Header />
   <main id="main-content" data-layout="index">
     <section id="hero" class="pt-2 pb-4">
       <SVG
@@ -63,6 +62,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       </LinkButton>
     </div>
   </main>
+  <Header />
   <Footer />
 </Layout>
 
