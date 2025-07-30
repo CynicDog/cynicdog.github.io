@@ -20,6 +20,18 @@ const svgUrl = typeof src === 'string' ? src : src.src;
 </figure>
 
 <script is:inline>
+  // Theme class detection
+  (function setInitialThemeClass() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.classList.toggle('dark', prefersDark);
+    document.documentElement.classList.toggle('light', !prefersDark);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      document.documentElement.classList.toggle('dark', e.matches);
+      document.documentElement.classList.toggle('light', !e.matches);
+    });
+  })();
+
   function modifySvg(svgString) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgString, 'image/svg+xml');
@@ -51,16 +63,14 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     return new XMLSerializer().serializeToString(doc);
   }
 
-  function initExcalidrawSVG() {
+  async function initExcalidrawSVG() {
     const svgContainers = document.querySelectorAll('.excalidraw-svg');
-    svgContainers.forEach(async (container) => {
+    for (const container of svgContainers) {
       const svgUrl = container.dataset.svgUrl;
       if (svgUrl) {
         try {
           const response = await fetch(svgUrl);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch SVG: ${response.statusText}`);
-          }
+          if (!response.ok) throw new Error(`Failed to fetch SVG: ${response.statusText}`);
           const svgData = await response.text();
           const modifiedSvg = modifySvg(svgData);
           container.innerHTML = modifiedSvg;
@@ -71,7 +81,7 @@ const svgUrl = typeof src === 'string' ? src : src.src;
           </svg>`;
         }
       }
-    });
+    }
   }
 
   document.addEventListener('DOMContentLoaded', initExcalidrawSVG);
@@ -84,38 +94,33 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     height: auto;
   }
 
-  :global(.excalidraw-svg .fill-skin-base) {
-      fill: rgb(34, 46, 54); /* #222E36 - dark for light mode */
+  /* Light mode defaults */
+  :global(.fill-skin-base) {
+    fill: rgb(34, 46, 54); /* #222E36 */
   }
-  @media (prefers-color-scheme: dark) {
-      :global(.excalidraw-svg .fill-skin-base) {
-          fill: rgb(175, 176, 177); /* #AFB0B1 - light for dark mode */
-      }
+  :global(.fill-skin-soft) {
+    fill: rgb(40, 39, 40); /* #282728 */
   }
-
-  :global(.excalidraw-svg .fill-skin-soft) {
-      fill: rgb(40, 39, 40); /* #282728 - dark for light mode */
-  }
-  @media (prefers-color-scheme: dark) {
-      :global(.excalidraw-svg .fill-skin-soft) {
-          fill: rgb(175, 176, 177); /* #AFB0B1 - light for dark mode */
-      }
+  :global(.stroke-skin-accent) {
+    stroke: rgb(26, 26, 26); /* #1A1A1A */
   }
 
-  :global(.excalidraw-svg .stroke-skin-accent) {
-      stroke: rgb(26, 26, 26); /* #1A1A1A - blackish for light mode */
+  /* Dark mode overrides */
+  :global(html.dark .fill-skin-base) {
+    fill: rgb(175, 176, 177); /* #AFB0B1 */
   }
-  @media (prefers-color-scheme: dark) {
-      :global(.excalidraw-svg .stroke-skin-accent) {
-          stroke: rgb(245, 245, 245); /* #F5F5F5 - whitish for dark mode */
-      }
+  :global(html.dark .fill-skin-soft) {
+    fill: rgb(175, 176, 177); /* #AFB0B1 */
   }
-
-  :global(.excalidraw-svg .excalidraw-element) {
-      transition: all 0.3s ease-in-out;
-  }
-  :global(.excalidraw-svg .excalidraw-element:hover) {
-      opacity: 0.8;
+  :global(html.dark .stroke-skin-accent) {
+    stroke: rgb(245, 245, 245); /* #F5F5F5 */
   }
 
+  :global(.excalidraw-element) {
+    transition: all 0.3s ease-in-out;
+  }
+
+  :global(.excalidraw-element:hover) {
+    opacity: 0.8;
+  }
 </style>
