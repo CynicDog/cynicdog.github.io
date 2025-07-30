@@ -37,21 +37,6 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         alt=""
         caption=""
       />
-      <Search />
-        {
-          recentPosts.length > 0 && (
-            <section id="recent-posts" class="pt-12 pb-6">
-              <h1 class="text-2xl font-semibold tracking-wide">Recent Posts</h1>
-              <ul>
-                {recentPosts.map(
-                  (data, index) =>
-                    index < SITE.postPerIndex && <Card variant="h3" {...data} />
-                )}
-              </ul>
-            </section>
-          )
-        }
-
       <div class="mx-auto flex max-w-app flex-col items-center justify-between sm:flex-row">
         <div class="col-span-2">
           <Socials centered />
@@ -73,6 +58,21 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           )
         }
       </div>
+      <Search />
+        {
+          recentPosts.length > 0 && (
+            <section id="recent-posts" class="pt-12 pb-6">
+              <h1 class="text-2xl font-semibold tracking-wide">Recent Posts</h1>
+              <ul>
+                {recentPosts.map(
+                  (data, index) =>
+                    index < SITE.postPerIndex && <Card variant="h3" {...data} />
+                )}
+              </ul>
+            </section>
+          )
+        }
+
     </section>
 
     <section id="archives" class="pt-2 pb-4">
