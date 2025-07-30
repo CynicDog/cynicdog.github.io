@@ -13,7 +13,7 @@ const svgUrl = typeof src === 'string' ? src : src.src;
 ---
 
 <figure class="w-full max-w-full overflow-hidden my-8">
-  <div class="excalidraw-svg w-full max-w-full overflow-hidden" data-svg-url={svgUrl} aria-label={alt}>
+  <div class="custom-svg w-full max-w-full overflow-hidden" data-svg-url={svgUrl} aria-label={alt}>
     <img src={svgUrl} alt={alt} style="display: none;" />
   </div>
   {caption && <figcaption class="text-center mt-4 text-sm text-skin-base italic">{caption}</figcaption>}
@@ -45,14 +45,14 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     });
 
     doc.querySelectorAll('g').forEach((g) => {
-      g.classList.add('excalidraw-element');
+      g.classList.add('custom-element');
     });
 
     return new XMLSerializer().serializeToString(doc);
   }
 
-  function initExcalidrawSVG() {
-    const svgContainers = document.querySelectorAll('.excalidraw-svg');
+  function initCustomSVG() {
+    const svgContainers = document.querySelectorAll('.custom-svg');
     svgContainers.forEach(async (container) => {
       const svgUrl = container.dataset.svgUrl;
       if (svgUrl) {
@@ -65,7 +65,7 @@ const svgUrl = typeof src === 'string' ? src : src.src;
           const modifiedSvg = modifySvg(svgData);
           container.innerHTML = modifiedSvg;
         } catch (error) {
-          console.error('Error in ExcalidrawSVG component:', error);
+          console.error('Error in CustomSVG component:', error);
           container.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
             <text x="10" y="50" fill="red">Error loading SVG</text>
           </svg>`;
@@ -74,41 +74,29 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     });
   }
 
-  document.addEventListener('DOMContentLoaded', initExcalidrawSVG);
-  document.addEventListener('astro:page-load', initExcalidrawSVG);
+  document.addEventListener('DOMContentLoaded', initCustomSVG);
+  document.addEventListener('astro:page-load', initCustomSVG);
 </script>
 
 <style>
-  :global(.excalidraw-svg svg) {
+  :global(.custom-svg svg) {
     width: 100%;
     height: auto;
   }
 
-  :global(.excalidraw-svg .fill-skin-base) {
-    fill: rgb(40, 39, 40);
+  :global(.custom-svg .fill-skin-base) {
+    @apply fill-[rgb(40, 39, 40)] dark:fill-[rgb(175, 176, 177)];
   }
-  :global(.dark .excalidraw-svg .fill-skin-base) {
-    fill: rgb(175, 176, 177);
+  :global(.custom-svg .fill-skin-soft) {
+    @apply fill-[rgb(40, 39, 40)] dark:fill-[rgb(175, 176, 177)];
   }
-
-  :global(.excalidraw-svg .fill-skin-soft) {
-    fill: rgb(40, 39, 40);
+  :global(.custom-svg .stroke-skin-accent) {
+    @apply stroke-[rgb(26, 26, 26)] dark:stroke-[rgb(245, 245, 245)];
   }
-  :global(.dark .excalidraw-svg .fill-skin-soft) {
-    fill: rgb(175, 176, 177);
-  }
-
-  :global(.excalidraw-svg .stroke-skin-accent) {
-    stroke: rgb(26, 26, 26);
-  }
-  :global(.dark .excalidraw-svg .stroke-skin-accent) {
-    stroke: rgb(245, 245, 245);
-  }
-
-  :global(.excalidraw-svg .excalidraw-element) {
+  :global(.custom-svg .custom-element) {
       transition: all 0.3s ease-in-out;
   }
-  :global(.excalidraw-svg .excalidraw-element:hover) {
+  :global(.custom-svg .custom-element:hover) {
       opacity: 0.8;
   }
 
