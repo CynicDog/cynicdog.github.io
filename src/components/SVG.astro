@@ -110,19 +110,10 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     width: 100%;
     height: auto;
   }
-
   :global(.custom-svg .custom-element) {
-    transition: transform 0.3s ease-in-out;
-    transform-origin: center;
+    transition: filter 0.3s ease;
   }
   :global(.custom-svg .custom-element:hover) {
-    animation: pulse 0.6s ease-in-out;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
   }
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-    100% { transform: scale(1); }
-  }
-
-
 </style>
