@@ -11,7 +11,7 @@ import GenericSVG from "@/components/GenericSVG.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
 import IconRss from "@/assets/icons/IconRss.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
-import LeisureAndEntertainmentArtAndCulture from "@/assets/leisure-and-entertainment-art-and-culture.svg"
+import SmallManStandingBetweenGiantBooks from "@/assets/small-man-standing-between-giant-books.svg"
 
 import { SITE } from "@/config";
 import { SOCIALS } from "@/constants";
@@ -26,7 +26,12 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 <Layout>
   <Header />
   <main id="main-content" data-layout="index">
-    <section id="hero" class="pt-8 pb-6">
+    <section id="hero" class="pt-2 pb-4">
+      <GenericSVG
+        src={SmallManStandingBetweenGiantBooks}
+        alt=""
+        caption=""
+      />
       {
         // only display if at least one social link is enabled
         SOCIALS.length > 0 && (
@@ -35,11 +40,6 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           </div>
         )
       }
-      <GenericSVG
-        src={LeisureAndEntertainmentArtAndCulture}
-        alt=""
-        caption=""
-      />
     </section>
 
     {
