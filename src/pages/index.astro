@@ -29,71 +29,46 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 
 <Layout>
   <main id="main-content" data-layout="index">
-    <div class="pt-2 pb-4">
-      <SVG src={SmallManStandingBetweenGiantBooks} alt="" caption="" />
-    </div>
-    <section id="search">
+    <section id="entry" class="pt-2 pb-4">
+      <SVG
+        src={SmallManStandingBetweenGiantBooks}
+        alt=""
+        caption=""
+      />
       <Search />
+        {
+          recentPosts.length > 0 && (
+            <section id="recent-posts" class="pt-12 pb-6">
+              <h1 class="text-2xl font-semibold tracking-wide">Recent Posts</h1>
+              <ul>
+                {recentPosts.map(
+                  (data, index) =>
+                    index < SITE.postPerIndex && <Card variant="h3" {...data} />
+                )}
+              </ul>
+            </section>
+          )
+        }
     </section>
-    {
-      recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-12 pb-6">
-          <h1 class="text-2xl font-semibold tracking-wide">Recent Posts</h1>
-          <ul>
-            {recentPosts.map(
-              (data, index) =>
-                index < SITE.postPerIndex && <Card variant="h3" {...data} />
-            )}
-          </ul>
-        </section>
-      )
-    }
-    <div class="pt-2 pb-4">
-      <SVG src={BalancingConcentrationAndTaskManagementWithHeadphones} alt="" caption="" />
-    </div>
+
     <section id="archives" class="pt-2 pb-4">
+      <SVG
+        src={BalancingConcentrationAndTaskManagementWithHeadphones}
+        alt=""
+        caption=""
+      />
       <Archives />
     </section>
-    <div class="pt-2 pb-4">
-      <SVG src={ProfilePicturesOfPeople} alt="" caption="" />
-    </div>
-    <section id="tags" class="pt-2 pb-4">
-      <Tags />
-    </section>
+
   </main>
 </Layout>
 
-<script is:inline>
+<script>
   document.addEventListener("astro:page-load", () => {
-    const indexLayout = document.querySelector("#main-content")?.dataset?.layout;
+    const indexLayout = (document.querySelector("#main-content") as HTMLElement)
+      ?.dataset?.layout;
     if (indexLayout) {
       sessionStorage.setItem("backUrl", "/");
     }
-
-    // Scroll to section if URL has hash
-    const hash = window.location.hash;
-    if (hash) {
-      const target = document.querySelector(hash);
-      if (target) {
-        requestAnimationFrame(() => {
-          target.scrollIntoView({ behavior: "smooth" });
-        });
-      }
-    }
-
-    // Scroll spy: update URL as section enters viewport
-    const sections = document.querySelectorAll("section[id]");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            history.replaceState(null, "", `#${entry.target.id}`);
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    sections.forEach((section) => observer.observe(section));
   });
 </script>

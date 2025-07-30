@@ -3,7 +3,6 @@ import { getCollection } from "astro:content";
 import type { GetStaticPathsOptions } from "astro";
 import Main from "@/layouts/Main.astro";
 import Layout from "@/layouts/Layout.astro";
-import BackButton from "@/components/BackButton.astro";
 import Card from "@/components/Card.astro";
 import Pagination from "@/components/Pagination.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
@@ -31,7 +30,6 @@ const { page, tagName } = Astro.props;
 ---
 
 <Layout title={`Tag: ${tagName} | ${SITE.title}`}>
-  <BackButton />
   <Main
     pageTitle={[`Tag:`, `${tagName}`]}
     titleTransition={tag}
