@@ -57,10 +57,17 @@ const svgUrl = typeof src === 'string' ? src : src.src;
 
   function onThemeChange(callback) {
     const html = document.documentElement;
+    let lastTheme = html.getAttribute('data-theme');
+
     const observer = new MutationObserver(() => {
-      callback();
+      const currentTheme = html.getAttribute('data-theme');
+      if (currentTheme !== lastTheme) {
+        lastTheme = currentTheme;
+        callback();
+      }
     });
-    observer.observe(html, { attributes: true, attributeFilter: ['class'] });
+
+    observer.observe(html, { attributes: true, attributeFilter: ['data-theme'] });
   }
 
   function initCustomSVG() {
@@ -68,7 +75,7 @@ const svgUrl = typeof src === 'string' ? src : src.src;
 
     const loadAndInject = async (container) => {
       const svgUrl = container.dataset.svgUrl;
-      const isDark = document.documentElement.classList.contains('dark');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
       if (svgUrl) {
         try {
@@ -85,6 +92,7 @@ const svgUrl = typeof src === 'string' ? src : src.src;
         }
       }
     };
+
     svgContainers.forEach(container => loadAndInject(container));
 
     // Re-inject SVGs when theme changes
