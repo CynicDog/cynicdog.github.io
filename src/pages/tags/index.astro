@@ -5,7 +5,9 @@ import Layout from "@/layouts/Layout.astro";
 import Tag from "@/components/Tag.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
+import GenericSVG from "@/components/GenericSVG.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
+import StudyingForSuccessStudentReviewingNotesAheadOfExams from "@/assets/studying-for-success-student-reviewing-notes-ahead-of-exams.svg"
 import { SITE } from "@/config";
 
 const posts = await getCollection("blog");
@@ -16,6 +18,11 @@ let tags = getUniqueTags(posts);
 <Layout title={`Tags | ${SITE.title}`}>
   <Header />
   <Main pageTitle="Tags" pageDesc="All the tags used in posts.">
+    <GenericSVG
+      src={StudyingForSuccessStudentReviewingNotesAheadOfExams}
+      alt=""
+      caption=""
+    />
     <ul>
       {tags.map(({ tag, tagName }) => <Tag {tag} {tagName} size="lg" />)}
     </ul>
