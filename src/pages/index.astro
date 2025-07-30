@@ -2,7 +2,6 @@
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
-import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Card from "@/components/Card.astro";
@@ -31,14 +30,6 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         alt=""
         caption=""
       />
-      {
-        // only display if at least one social link is enabled
-        SOCIALS.length > 0 && (
-          <div class="mt-4 flex flex-col sm:flex-row sm:items-center">
-            <Socials />
-          </div>
-        )
-      }
     </section>
 
     {
@@ -63,7 +54,6 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     </div>
   </main>
   <Header />
-  <Footer />
 </Layout>
 
 <script>

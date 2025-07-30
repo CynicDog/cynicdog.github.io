@@ -7,6 +7,7 @@ import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import LinkButton from "./LinkButton.astro";
+import Socials from "./Socials.astro";
 import { SITE } from "@/config";
 
 const { pathname } = Astro.url;
@@ -133,6 +134,9 @@ const isActive = (path: string) => {
               </li>
             )
           }
+          <li class="col-span-2">
+            <Socials centered />
+          </li>
         </ul>
       </nav>
     </div>
