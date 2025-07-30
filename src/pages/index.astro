@@ -29,12 +29,8 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 
 <Layout>
   <main id="main-content" data-layout="index">
-    <section id="hero" class="pt-2 pb-4">
-      <SVG
-        src={SmallManStandingBetweenGiantBooks}
-        alt=""
-        caption=""
-      />
+    <section id="entry" class="pt-2 pb-4">
+      <SVG src={SmallManStandingBetweenGiantBooks} alt="" caption="" />
     </section>
 
     <Search />
@@ -53,33 +49,51 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       )
     }
 
-    <section id="hero" class="pt-2 pb-4">
-      <SVG
-        src={BalancingConcentrationAndTaskManagementWithHeadphones}
-        alt=""
-        caption=""
-      />
+    <section id="archives" class="pt-2 pb-4">
+      <SVG src={BalancingConcentrationAndTaskManagementWithHeadphones} alt="" caption="" />
     </section>
+
     <Archives />
 
-    <section id="hero" class="pt-2 pb-4">
-      <SVG
-        src={ProfilePicturesOfPeople}
-        alt=""
-        caption=""
-      />
+    <section id="tags" class="pt-2 pb-4">
+      <SVG src={ProfilePicturesOfPeople} alt="" caption="" />
     </section>
-    <Tags />
 
+    <Tags />
   </main>
 </Layout>
 
-<script>
+<script is:inline>
   document.addEventListener("astro:page-load", () => {
-    const indexLayout = (document.querySelector("#main-content") as HTMLElement)
-      ?.dataset?.layout;
+    const indexLayout = document.querySelector("#main-content")?.dataset?.layout;
     if (indexLayout) {
       sessionStorage.setItem("backUrl", "/");
     }
+
+    // Scroll to section if URL has hash
+    const hash = window.location.hash;
+    if (hash) {
+      const target = document.querySelector(hash);
+      if (target) {
+        requestAnimationFrame(() => {
+          target.scrollIntoView({ behavior: "smooth" });
+        });
+      }
+    }
+
+    // Scroll spy: update URL as section enters viewport
+    const sections = document.querySelectorAll("section[id]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            history.replaceState(null, "", `#${entry.target.id}`);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    sections.forEach((section) => observer.observe(section));
   });
 </script>
