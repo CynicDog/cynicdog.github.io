@@ -39,7 +39,7 @@ To put it into practice, I built a lightweight gRPC server and client around Pok
 
 I set up the project using [`uv`](https://github.com/astral-sh/uv), a fast Python environment and packaging tool. It handled my dependencies, created a lockfile, and kept everything reproducible.
 
-Inside a `proto/` directory, I initialized a Buf module, declared my dependencies in `buf.yaml`, and added a `buf.gen.yaml` file to define how Buf should generate Python code — both for protobuf classes and the gRPC service interfaces.
+Inside a `proto/` directory, I initialized a Buf module, declared my dependencies in [`buf.yaml`](https://github.com/CynicDog/pokedex-grpc/blob/main/proto/buf.yaml), and added a [`buf.gen.yaml`](https://github.com/CynicDog/pokedex-grpc/blob/main/proto/buf.gen.yaml) file to define how Buf should generate Python code — both for protobuf classes and the gRPC service interfaces.
 
 Once everything was wired up, I ran Buf’s generator. The result: a clean set of `.py` and `.pyi` files in a [`gen/` folder](https://github.com/CynicDog/pokedex-grpc/tree/main/proto/gen), fully ready to import into Python.
 
