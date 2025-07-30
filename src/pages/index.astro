@@ -29,12 +29,12 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 
 <Layout>
   <main id="main-content" data-layout="index">
-    <section id="entry" class="pt-2 pb-4">
+    <div class="pt-2 pb-4">
       <SVG src={SmallManStandingBetweenGiantBooks} alt="" caption="" />
+    </div>
+    <section id="search">
+      <Search />
     </section>
-
-    <Search />
-
     {
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-12 pb-6">
@@ -48,18 +48,18 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         </section>
       )
     }
-
-    <section id="archives" class="pt-2 pb-4">
+    <div class="pt-2 pb-4">
       <SVG src={BalancingConcentrationAndTaskManagementWithHeadphones} alt="" caption="" />
+    </div>
+    <section id="archives" class="pt-2 pb-4">
+      <Archives />
     </section>
-
-    <Archives />
-
-    <section id="tags" class="pt-2 pb-4">
+    <div class="pt-2 pb-4">
       <SVG src={ProfilePicturesOfPeople} alt="" caption="" />
+    </div>
+    <section id="tags" class="pt-2 pb-4">
+      <Tags />
     </section>
-
-    <Tags />
   </main>
 </Layout>
 
