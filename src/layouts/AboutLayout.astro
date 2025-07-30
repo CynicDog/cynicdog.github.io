@@ -1,7 +1,7 @@
 ---
 import Footer from "@/components/Footer.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
-import Layout from "./Layout.astro";
+import Socials from "@components/Socials.astro";
 import { SITE } from "@/config";
 
 export interface Props {
@@ -16,11 +16,11 @@ const { frontmatter } = Astro.props;
 
 <Layout title={`${frontmatter.title} | ${SITE.title}`}>
   <Breadcrumb />
+  <Socials centered />
   <main id="main-content">
     <section id="about" class="app-prose mb-28 max-w-app prose-img:border-0">
       <h1 class="text-2xl tracking-wider sm:text-3xl">{frontmatter.title}</h1>
       <slot />
     </section>
   </main>
-  <Footer />
 </Layout>
