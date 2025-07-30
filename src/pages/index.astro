@@ -18,9 +18,9 @@ import IconMoon from "@/assets/icons/IconMoon.svg";
 import { SITE } from "@/config";
 import { SOCIALS } from "@/constants";
 
-import SmallManStandingBetweenGiantBooks from "@/assets/small-man-standing-between-giant-books.svg"
-import BalancingConcentrationAndTaskManagementWithHeadphones from "@/assets/balancing-concentration-and-task-management-with-headphones.svg"
-import ProfilePicturesOfPeople from "@/assets/profile-pictures-of-people.svg"
+import SmallManStandingBetweenGiantBooks from "@/assets/small-man-standing-between-giant-books.svg";
+import BalancingConcentrationAndTaskManagementWithHeadphones from "@/assets/balancing-concentration-and-task-management-with-headphones.svg";
+import ManWorkingAtDesktopComputer1 from "@/assets/man-working-at-desktop-computer-1.svg";
 
 const posts = await getCollection("blog");
 
@@ -86,7 +86,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 
     <section id="tags" class="pt-2 pb-4">
       <SVG
-        src={ProfilePicturesOfPeople}
+        src={ManWorkingAtDesktopComputer1}
         alt=""
         caption=""
       />
