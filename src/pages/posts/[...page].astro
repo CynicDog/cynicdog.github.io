@@ -7,7 +7,9 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
 import Pagination from "@/components/Pagination.astro";
+import GenericSVG from "@/components/GenericSVG.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
+import KindyOpenBook from "@/assets/kindy-open-book.svg"
 import { SITE } from "@/config";
 
 export const getStaticPaths = (async ({ paginate }) => {
@@ -20,7 +22,12 @@ const { page } = Astro.props;
 
 <Layout title={`Posts | ${SITE.title}`}>
   <Header />
-  <Main pageTitle="Posts" pageDesc="All the articles I've posted.">
+  <Main pageTitle="Posts" pageDesc="">
+    <GenericSVG
+      src={KindyOpenBook}
+      alt=""
+      caption=""
+    />
     <ul>
       {page.data.map(data => <Card {...data} />)}
     </ul>
