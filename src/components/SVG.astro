@@ -110,14 +110,10 @@ const svgUrl = typeof src === 'string' ? src : src.src;
     width: 100%;
     height: auto;
   }
-  :global(.custom-svg .custom-element:hover) {
-    animation: wiggle 0.4s ease-in-out;
+  :global(.custom-svg .custom-element) {
+      transition: all 0.3s ease-in-out;
   }
-  @keyframes wiggle {
-    0% { transform: rotate(0); }
-    25% { transform: rotate(2deg); }
-    50% { transform: rotate(-2deg); }
-    75% { transform: rotate(2deg); }
-    100% { transform: rotate(0); }
+  :global(.custom-svg .custom-element:hover) {
+      opacity: 0.8;
   }
 </style>
