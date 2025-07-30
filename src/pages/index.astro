@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
-import Footer from "@/components/Footer.astro";
+import Search from "@/pages/search.astro";
 import Socials from "@/components/Socials.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Card from "@/components/Card.astro";
@@ -32,6 +32,8 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
       />
     </section>
 
+    <Search />
+
     {
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-12 pb-6">
@@ -45,15 +47,13 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         </section>
       )
     }
-
-    <div class="my-8 text-center">
-      <LinkButton href="/posts/">
-        All Posts
-        <IconArrowRight class="inline-block rtl:-rotate-180" />
+    <div class="my-4 text-center">
+      <LinkButton href="/archives/">
+        Archives
       </LinkButton>
     </div>
+
   </main>
-  <Footer />
 </Layout>
 
 <script>
