@@ -20,6 +20,7 @@
     "@tailwindcss/vite": "^4.1.10",
     "astro": "^5.10.0",
     "dayjs": "^1.11.13",
+    "gsap": "^3.13.0",
     "lodash.kebabcase": "^4.1.1",
     "remark-collapse": "^0.1.2",
     "remark-toc": "^9.0.0",
