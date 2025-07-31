@@ -10,7 +10,7 @@ tags: [devops, agile, github-actions, excalidraw]
 description: ""
 ---
 
-import SVG from '../../components/SVG.astro';
+import ExcalidrawSVG from '../../components/ExcalidrawSVG.astro';
 import GitFlow from '../../assets/git-flow.svg';
 import GitFlowProcess from '../../assets/git-flow-process.svg';
 
@@ -30,7 +30,7 @@ So I thought: what if we built a minimal Agile platform using just GitHub?
 
 I started simple: create an Issue, and let that trigger a branch. If the Issue is labeled `hotfix`, then a `hotfix/issue-42` branch is created. Otherwise, we get a `feature/issue-42` branch — ready for development. From there, it’s just Git — commit, push, open a PR. 
 
-<SVG
+<ExcalidrawSVG
   src={GitFlow}
   alt=""
   caption=""
@@ -38,7 +38,7 @@ I started simple: create an Issue, and let that trigger a branch. If the Issue i
 
 When a pull request is opened to `main`, a bot leaves a comment. That comment lays out the conventions: merge to `development` first, build and deploy, then move on to `stage`, and finally to `main`. The whole flow is CI/CD-aware and environment-aware. Developers trigger deployments by leaving comments like `deploy for staging`. Each comment maps to a GitHub Actions workflow.
 
-<SVG
+<ExcalidrawSVG
   src={GitFlowProcess}
   alt=""
   caption=""
