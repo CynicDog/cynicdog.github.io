@@ -35,13 +35,10 @@ Instead of juggling four separate gRPC streams (one per service), ADS gives you 
 
 Envoy’s docs spell out four xDS transport variants along two axes—State-of-the-World vs. incremental, and per-type vs. aggregated streams:
 
-> **State of the World (Basic xDS):** SotW, separate gRPC stream for each resource type
->
-> **Incremental xDS:** incremental, separate gRPC stream for each resource type
->
-> **Aggregated Discovery Service (ADS):** SotW, aggregate stream for all resource types
->
-> **Incremental ADS:** incremental, aggregate stream for all resource types
+> * **State of the World (Basic xDS):** SotW, separate gRPC stream for each resource type
+> * **Incremental xDS:** incremental, separate gRPC stream for each resource type
+> * **Aggregated Discovery Service (ADS):** SotW, aggregate stream for all resource types
+> * **Incremental ADS:** incremental, aggregate stream for all resource types
 
 Our Python control plane sits in the **Aggregated Discovery Service** (ADS) + **State-of-the-World** corner:
 
