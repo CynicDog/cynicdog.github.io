@@ -46,7 +46,7 @@ Our Python control plane sits in the **Aggregated Discovery Service** (ADS) + **
 
 If you later need “send-only-what-changed” behavior or lazy loading at scale, you can switch to **Incremental ADS** (`DeltaAggregatedResources`). But for a lean, easy-to-debug demo, SotW ADS gives us exactly the right mix of simplicity and correctness.
 
-## The Missing Link: Envoy’s Bootstrap (`envoy.yaml`)
+## First Contact: How Envoy Finds Its Control Plane
 
 Before our Python server can work its magic, the Envoy proxy needs to be told one simple, critical thing: where to find the xDS server. This is the sole job of the static `envoy.yaml` file. It’s the "bootstrap" configuration that gets the proxy’s lights on and points it in the right direction.
 
