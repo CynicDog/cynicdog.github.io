@@ -56,7 +56,6 @@ My `envoy.yaml` shows this perfectly. It’s mostly static housekeeping, but the
 
 * **The Control Plane Address:** The `dynamic_resources` section is where the magic begins. It tells Envoy that all its configuration—Listeners, Clusters, Routes—will come from a dynamic source via the *Aggregated Discovery Service* (`ads_config`). Critically, it points to a *static cluster* named `xds_cluster` for this purpose.
 * **A Static Cluster for a Dynamic World:** This `xds_cluster` is a bit of an anachronism—a static cluster defined in a file—but it’s essential. Its only purpose is to define a host (`xds-server`) and a port (`5678`) so Envoy knows how to establish the initial gRPC connection to our Python server.
-* **Avoiding Warnings:** The rest of the file is a testament to how configuration evolves. The `admin` and `overload_manager` sections aren’t for routing traffic; they set up the proxy itself. The new, modern configs for these sections were crucial to eliminate the deprecation warnings that plagued my initial attempts—a classic example of how a static file can cause headaches if not kept up-to-date.
 
 Think of it this way: our `envoy.yaml` isn’t the destination. It’s the ignition key and map to the real destination—our Python xDS server.
 
