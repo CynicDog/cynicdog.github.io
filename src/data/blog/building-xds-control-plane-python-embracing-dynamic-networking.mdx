@@ -16,14 +16,14 @@ So there I was, trying to teach Envoy how to think.
 
 Well. Let’s just say you don’t fully appreciate the chaos of modern networking until you meet xDS — Envoy’s Extensible Discovery Service.
 
-The idea is solid: instead of hardcoding your proxy config in static YAML, you spin up a separate control plane that tells Envoy what to do — live, over gRPC. Need to add a new service? Change a route? Rotate a backend IP? Push it via xDS. No restarts. No redeploys. No drama.
+The idea is solid: instead of hardcoding your proxy config in static YAML, you spin up a separate control plane that tells Envoy what to do — live, over gRPC.
 
-But the xDS family is big — and it takes some time to figure out who’s doing what.
+The xDS API family is extensive, and it can take a bit of time to understand what each component does. Here's a breakdown of the key members:
 
-* **LDS** tells Envoy what ports to listen on and how to handle incoming requests.
-* **CDS** defines the clusters — i.e. upstream services you want to talk to.
-* **RDS** wires up routing rules like “send `/users` to the user-service.”
-* **EDS** fills in the actual IPs of healthy service instances.
+* **LDS (Listener Discovery Service)** – Configures which ports Envoy should listen on and how to process incoming traffic.
+* **CDS (Cluster Discovery Service)** – Defines clusters, representing the upstream services Envoy can connect to.
+* **RDS (Route Discovery Service)** – Specifies routing rules, such as directing requests for `/users` to the user service.
+* **EDS (Endpoint Discovery Service)** – Provides the actual IP addresses of healthy instances within a cluster.
 
 And here’s the catch: these configs need to arrive in the right order. You can’t route to a cluster that doesn’t exist. You can’t define an endpoint before the cluster is known. Enter *ADS* — Aggregated Discovery Service.
 
