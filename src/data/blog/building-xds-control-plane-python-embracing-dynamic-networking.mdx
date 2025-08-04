@@ -29,8 +29,6 @@ And here’s the catch: these configs need to arrive in the right order. You can
 
 Instead of juggling four separate gRPC streams (one per service), ADS gives you a single, unified stream where everything flows through one channel. CDS → EDS → RDS, in perfect order. Envoy connects once, and the control plane sequences the updates.
 
-> It’s not just cleaner — it’s essential. Without ADS, you’d need to sync multiple streams across different servers, and pray your updates land in the right order. ADS eliminates that risk by design.
-
 ## SotW ADS in Action
 
 Envoy’s docs spell out four xDS transport variants along two axes—State-of-the-World vs. incremental, and per-type vs. aggregated streams:
