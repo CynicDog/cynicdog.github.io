@@ -77,7 +77,7 @@ With the route chosen, the request leaves Envoy through a **Cluster**. Our `gene
 
 From opening port 15001 to forwarding requests upstream, the entire flow lives in a few hundred lines of Python. Each part we configure is a Protobuf message, streamed by our `XdsServer` over gRPC, handing Envoy a dynamic, fully detailed playbook—no static YAML needed.
 
-## Lessons Learned: Embracing Dynamic Configuration in the Ocean
+## Conclusion 
 
 Getting an xDS server *up and running* is one thing — but truly understanding the path to that point is a whole different story. This project felt like a microcosm of modern microservice challenges: complex, sometimes maddening, but rewarding.
 
