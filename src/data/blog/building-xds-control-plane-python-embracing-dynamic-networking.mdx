@@ -57,15 +57,17 @@ Think of it this way: our `envoy.yaml` isn’t the destination. It’s the ignit
 
 ## Rebuilding Envoy’s Request Path in Python
 
-This server isn’t just wiring together gRPC calls—it’s a live re-creation of how an HTTP request flows through Envoy, from socket to upstream. Instead of static YAML, we assemble the whole chain dynamically in Python using Envoy’s Protobuf APIs.
+Once connected, our Python server takes over. It doesn't just respond to xDS requests—it dynamically reassembles Envoy’s full L4–L7 request path using nothing but Protobuf APIs.
 
-At the edge of the mesh, [`generate_listener_config()`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L75) sets up a Listener on port `15001`. It’s the front door for incoming connections. Inside, we drop in an [`HttpConnectionManager`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L113)—Envoy’s L7-aware filter that converts raw TCP into HTTP. From there, traffic moves through a minimal HTTP filter chain, with the `router` filter handling the actual routing logic.
+At the mesh edge, [`generate_listener_config()`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L75) sets up a Listener on port `15001`, Envoy’s entry point for downstream traffic. The Listener kicks off a filter chain starting with an [`HttpConnectionManager`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L113), which upgrades raw TCP into structured HTTP requests.
 
-Routing is kept simple: all paths (`/`) forward to the `httpbin_service` cluster, defined in [`generate_cluster_config()`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L164). This cluster uses logical DNS to resolve the hostname `httpbin`, assuming it’s reachable within the network (like a Docker container), and load balances requests—round-robin style—across any resolved endpoints.
+Each request then passes through a minimal set of HTTP filters. The only one we use is `envoy.filters.http.router`, which routes requests based on the attached `RouteConfiguration`.
 
-The whole flow—Listener to filter chain, HTTP parsing to routing, and finally, to the upstream Cluster—is streamed to Envoy by the `XdsServer`, which implements the Aggregated Discovery Service (ADS). It only sends updates when the config actually changes, using versioning and content hashes to track state.
+In our case, all paths (`/`) forward to a single cluster, `httpbin_service`, built by [`generate_cluster_config()`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L164). This cluster is resolved via `LOGICAL_DNS`, using the hostname `httpbin`. Since all services—Envoy, the xDS server, and the `httpbin` backend—run inside the same Docker network, Docker’s internal DNS allows Envoy to resolve `httpbin` directly to its container IP.
 
-This setup is small, but it mirrors the real-world anatomy of an Envoy deployment—just with Python and Protobufs instead of static config files.
+The full flow—Listener → Filter chain → Routing → Cluster resolution—is served dynamically over gRPC by the `XdsServer`, which implements Envoy’s Aggregated Discovery Service (ADS). It supports stateful versioning and content hashing to avoid sending redundant updates.
+
+This compact Python server mirrors a production-ready Envoy setup, but swaps static YAML for dynamic logic—giving you full visibility and control over how Envoy processes requests, step by step.
 
 ## Conclusion
 
