@@ -61,7 +61,7 @@ Once connected, our Python server takes over. It doesn't just respond to xDS req
 
 At the mesh edge, [`generate_listener_config()`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L75) sets up a Listener on port `15001`, Envoy’s entry point for downstream traffic. The Listener kicks off a filter chain starting with an [`HttpConnectionManager`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L113), which upgrades raw TCP into structured HTTP requests.
 
-Each request then passes through a minimal set of HTTP filters. The only one we use is `envoy.filters.http.router`, which routes requests based on the attached `RouteConfiguration`.
+Each request then passes through a minimal set of HTTP filters. The only one we use is `envoy.filters.http.router`, which routes requests based on the attached [`RouteConfiguration`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L84).
 
 In our case, all paths (`/`) forward to a single cluster, `httpbin_service`, built by [`generate_cluster_config()`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/52925c42c187eeb6b657b7af0af2193b3111069e/xds_server.py#L164). This cluster is resolved via `LOGICAL_DNS`, using the hostname `httpbin`. Since all services—Envoy, the xDS server, and the `httpbin` backend—run inside the same Docker network, Docker’s internal DNS allows Envoy to resolve `httpbin` directly to its container IP.
 
