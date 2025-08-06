@@ -10,6 +10,9 @@ tags: ["envoy", "xds", "grpc", "python", "network", "buf", "uv"]
 description: ""
 --- 
 
+import ExcalidrawSVG from '../../components/ExcalidrawSVG.astro';
+import EnvoyXDS from '../../assets/envoy-xds.svg';
+
 ## Decoding the Envoy Control Plane: An xDS Overview
 
 So there I was, trying to teach Envoy how to think.
@@ -60,6 +63,12 @@ Think of it this way: our `envoy.yaml` isn’t the destination. It’s the ignit
 After Envoy connects to the xDS server, they exchange configuration updates through a handshake using **ACKs**. Envoy requests configs, the server sends them, and Envoy confirms receipt by sending an ACK with the config version. This tells the server Envoy successfully applied the update.
 
 If something goes wrong, Envoy can send a NACK to ask for a retry. These ACKs ensure both sides stay synchronized, preventing Envoy from running outdated or broken configs.
+
+<ExcalidrawSVG
+    src={EnvoyXDS}
+    alt=""
+    caption=""
+/>
 
 ## Rebuilding Envoy’s Request Path in Python
 
