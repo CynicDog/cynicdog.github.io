@@ -55,6 +55,12 @@ My [`envoy.yaml`](https://github.com/CynicDog/Envoy-xDS-server-in-python/blob/ma
 
 Think of it this way: our `envoy.yaml` isn’t the destination. It’s the ignition key and map to the real destination—our Python xDS server.
 
+## The Handshake: Keeping Envoy and the Control Plane in Sync
+
+After Envoy connects to the xDS server, they exchange configuration updates through a handshake using **ACKs**. Envoy requests configs, the server sends them, and Envoy confirms receipt by sending an ACK with the config version. This tells the server Envoy successfully applied the update.
+
+If something goes wrong, Envoy can send a NACK to ask for a retry. These ACKs ensure both sides stay synchronized, preventing Envoy from running outdated or broken configs.
+
 ## Rebuilding Envoy’s Request Path in Python
 
 Once connected, our Python server takes over. It doesn't just respond to xDS requests—it dynamically reassembles Envoy’s full L4–L7 request path using nothing but Protobuf APIs.
