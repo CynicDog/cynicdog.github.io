@@ -130,3 +130,7 @@
     }
   }
 }
+
+#notes-panel {
+  color: var(--foreground);
+}

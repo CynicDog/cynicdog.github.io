@@ -1,0 +1,48 @@
+---
+export interface Props {
+  notes: Record<string, string>;
+}
+const { notes } = Astro.props;
+---
+
+<div class="relative left-1/2 right-1/2 -mx-[50vw] w-screen px-4 sm:px-8 lg:px-12 xl:px-16">
+  <div class="mx-auto grid grid-cols-12 gap-8">
+    <article
+      class="col-span-12 md:col-span-8 rounded-2xl border border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-900 p-6 sm:p-8 lg:p-12 max-w-none shadow-sm prose prose-gray dark:prose-invert prose-pre:bg-[--shiki-light-bg] dark:prose-pre:bg-[--shiki-dark-bg]"
+    >
+      <slot />
+    </article>
+
+    <aside class="col-span-12 md:col-span-4">
+      <div class="sticky top-5 space-y-1">
+        <div
+          id="notes-panel"
+          class="transition-all duration-500 ease-in-out opacity-0"
+          data-notes={JSON.stringify(notes)}
+        ></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  import { initNotesAnimations } from "@/utils/gsapNotes";
+
+  document.addEventListener("astro:page-load", () => {
+
+    const notesPanel = document.getElementById("notes-panel");
+
+    if (!notesPanel) return;
+
+    const notesData = notesPanel.dataset.notes;
+    if (!notesData) return;
+
+    try {
+      const notes = JSON.parse(notesData);
+
+      initNotesAnimations(Object.freeze(notes));
+    } catch (err) {
+      console.error("Failed to parse notes:", err);
+    }
+  });
+</script>
