@@ -1,14 +1,20 @@
 ---
-title: something like "Try to understand gRPC Proposals.."
+title: "gRPC Proposal Series - Behind the Proxy Curtain"
 author: eunsang
-pubDatetime: 2025-08-10T01:00:00Z
-modDatetime: 2025-08-10T01:00:00Z
-slug: something-like-try-to-understand
+pubDatetime: 2025-08-16T01:00:00Z
+modDatetime: 2025-08-16T01:00:00Z
+slug: grpc-proposal-series-behind-the-proxy-curtain
 featured: false
 draft: false
 tags: [grpc, proposal]
 description: ""
 ---
+
+I’ve often felt lost when it comes to the networking layers — L3, L4, L7 — and gRPC always seemed like a black box to me. To fix that, I’m starting the **"gRPC Proposal Series"**: a collection of posts where I study, dissect, and experiment with gRPC proposals, both to deepen my understanding and to share insights with others navigating the cloud computing world.
+
+gRPC is a high-performance, open-source RPC framework backed by Google, designed with the spirit of efficient, language-agnostic communication. The team behind gRPC documents its core implementation decisions through [proposals on GitHub](https://github.com/grpc/proposal), which serve as the foundation for new features and enhancements.
+
+With that in mind, let’s dive into the first proposal in the series: [HTTP CONNECT Proxy Support](https://github.com/grpc/proposal/blob/master/A1-http-connect-proxy-support.md).
 
 import NotesPanel from '../../components/NotesPanel.astro';
 
@@ -16,49 +22,57 @@ export const notes = {
   background: `
     <div>
       <h3>Background</h3>
-      <p>A key point is that TCP proxies don't understand the gRPC protocol, which can break gRPC's built-in client-side load balancing. This proposal addresses how to make them work together by using HTTP CONNECT, a method that allows proxies to create a network tunnel to a specified destination. This keeps the client-side load balancing intact since the client is still directly connecting to the backend, just through a tunnel. </p>
+      <p>Have you ever tried running gRPC through a corporate proxy and felt like the network was working against you? That’s because most TCP proxies don’t understand gRPC, which can break client-side load balancing. The solution? HTTP CONNECT — a way for proxies to create a tunnel straight to the backend. This keeps your client smart and load-balanced, while still letting the proxy do its thing.</p>
     </div>
   `,
   implementation: `
     <div>
       <h3>Implementation</h3>
-      <p>The core of the implementation is the handshaker, which is a key component in C-core for managing connections. The proxy mapper hook is the most important part of this proposal, allowing for addresses to be changed right before the connection is made. The Go and Java implementations are catching up to the C-core version, with Java using <code>java.net.ProxySelector</code> to handle proxy settings and Go using a custom dialer.</p>
+      <p>At the heart of this is the handshaker in C-core — it’s the bouncer managing who gets in. Then there’s the proxy mapper hook, the real star here: it lets you rewrite addresses right before the connection. Java leans on <code>java.net.ProxySelector</code>, Go uses a custom dialer, and C-core does its thing like a pro. The goal? Make every language catch up without breaking the flow.</p>
     </div>
   `,
   proposed_functionality: `
     <div>
       <h3>Proposed Functionality</h3>
-      <p>The proposed design introduces a "proxy mapper" with two main hooks. The first hook, before name resolution, can be used to override the server name that will be resolved. The second, before connecting to a target address, can change the address that the client connects to. This gives the client a way to decide if and when a proxy is needed.</p>
+      <p>Think of the proxy mapper as a choose-your-own-adventure for connections. First, you get a hook before name resolution — useful if you want to change the server name. Then there’s a hook before connecting, which lets you swap the target address. Together, they give the client the final say: when to use a proxy and when to go direct.</p>
+    </div>
+  `,
+  use_cases: `
+    <div>
+      <h3>Use Cases</h3>
+      <p>Corporate life is one scenario: everything must go through a proxy. Internal traffic might bypass it, but usually, it’s a one-size-fits-all. </p>
+      <p>Partial protection is another: only certain addresses go through a proxy. Custom logic decides the fate of each request.</p>
+      <p>Finally, some services need to hide their inner workings. Public-facing but internally guarded, these services rely on the proxy for access — the only route to keep internal architecture safe.</p>
     </div>
   `,
   case_1: `
     <div>
-      <h3>Case 1</h3>
-      <p>This use case is for a corporate environment where all outbound traffic must go through a proxy. The gRPC client uses a proxy mapper to resolve the proxy's name instead of the original server's. This means the client only sees and connects to the proxy, which then handles all traffic. A key drawback is that this setup prevents gRPC from doing its own per-call load balancing, as the client no longer knows about the backend addresses.</p>
+      <h3>Case 1: Full Corporate Proxy</h3>
+      <p>Everything goes through the proxy. The proxy mapper redirects to the proxy instead of the backend. Drawback? gRPC loses per-call load balancing because the client can’t see backend addresses. Simple but limited.</p>
     </div>
   `,
   case_2: `
     <div>
-      <h3>Case 2</h3>
-      <p>Case 2 is more flexible, where only specific destinations need a proxy. In this scenario, the proxy mapper overrides the target address, but not the name resolution. The client still resolves the backend addresses, so it can see and load balance between them. The proxy mapper simply tells the client which connections should go through the proxy tunnel, which preserves client-side per-call load balancing.</p>
+      <h3>Case 2: Selective Proxying</h3>
+      <p>Only some connections go through the proxy. The proxy mapper swaps the target address when needed, but the client still resolves backend addresses and can do load balancing. Smart and flexible.</p>
     </div>
   `,
   case_3: `
     <div>
-      <h3>Case 3</h3>
-      <p>This is a more complex, hybrid use case. The resolver is configured to return the proxy's address but tags it with the <code>is_balancer</code> bit. This allows the gRPC client to treat the proxy as a load balancer. The proxy mapper then intercepts the addresses returned by this "balancer" and rewrites them to be the proxy's address, using the original internal address in the HTTP CONNECT request. This setup only works with the <code>grpclb</code> load balancing policy and is complex to manage since the client needs a list of all proxy addresses.</p>
+      <h3>Case 3: Hybrid Approach</h3>
+      <p>This is the high-wire act. The resolver returns proxy addresses with load-balancer flags, and the mapper rewrites them as needed. Original internal addresses are preserved in HTTP CONNECT requests. Works only with <code>grpclb</code> and requires careful management of proxy lists — but it’s powerful.</p>
     </div>
   `,
   rationale: `
     <div>
       <h3>Rationale</h3>
-      <p>The main reason for this design is to provide flexibility for various proxy setups. The proposal uses two different hook points, which address the needs of all three use cases. A potential issue with Case 3 is the synchronization of proxy lists across all clients. An alternative, a gRPC-level proxy, is an option but it requires the proxy to be fully trusted, which can introduce a security risk.</p>
+      <p>Why this design? Flexibility. By offering hooks at two points, we cover all three cases. Case 3 is tricky: you need synchronized proxy lists. A gRPC-level proxy is possible, but introduces security concerns. This proposal balances flexibility, performance, and safety.</p>
     </div>
   `,
   open_issues: `
     <div>
       <h3>Open Issues</h3>
-      <p>There are no major open issues. However, it's important to be careful with the configurations of both the proxy mapper and the name resolver. If they get out of sync, it could lead to unexpected runtime behavior or connection problems.</p>
+      <p>Nothing critical, but caution is required. Proxy mapper and resolver configurations must stay in sync. If they drift, you’ll run into unexpected behavior or failed connections — so keep them aligned!</p>
     </div>
   `
 };
