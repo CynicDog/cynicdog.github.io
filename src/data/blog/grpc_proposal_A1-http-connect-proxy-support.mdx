@@ -1,18 +1,18 @@
 ---
-title: "gRPC Proposal Series - Behind the Proxy Curtain"
+title: "(gRPC Proposal) - A1. Behind the Proxy Curtain"
 author: eunsang
 pubDatetime: 2025-08-16T01:00:00Z
 modDatetime: 2025-08-16T01:00:00Z
-slug: grpc-proposal-series-behind-the-proxy-curtain
+slug: grpc-proposal-a1-behind-the-proxy-curtain
 featured: false
 draft: false
 tags: [grpc, proposal]
 description: ""
 ---
 
-I’ve often felt lost when it comes to the networking layers — L3, L4, L7 — and gRPC always seemed like a black box to me. To fix that, I’m starting the **"gRPC Proposal Series"**: a collection of posts where I study, dissect, and experiment with gRPC proposals, both to deepen my understanding and to share insights with others navigating the cloud computing world.
+I’ve always been fascinated by how cloud systems talk to each other, yet networking layers and RPC frameworks often felt like hidden machinery. Among them, gRPC stood out to me — powerful, widely adopted, but sometimes a black box. To unpack that mystery, I’m starting the **“gRPC Proposal Series”**: a collection of posts where I study, dissect, and experiment with gRPC proposals, both to deepen my understanding and to share insights with others navigating distributed systems.
 
-gRPC is a high-performance, open-source RPC framework backed by Google, designed with the spirit of efficient, language-agnostic communication. The team behind gRPC documents its core implementation decisions through [proposals on GitHub](https://github.com/grpc/proposal), which serve as the foundation for new features and enhancements.
+gRPC is a high-performance, open-source RPC framework backed by Google, designed for efficient, language-agnostic communication. The team behind it documents key design choices through [proposals on GitHub](https://github.com/grpc/proposal), which serve as the blueprint for new features and enhancements.
 
 With that in mind, let’s dive into the first proposal in the series: [HTTP CONNECT Proxy Support](https://github.com/grpc/proposal/blob/master/A1-http-connect-proxy-support.md).
 
@@ -68,12 +68,6 @@ export const notes = {
       <h3>Rationale</h3>
       <p>Why this design? Flexibility. By offering hooks at two points, we cover all three cases. Case 3 is tricky: you need synchronized proxy lists. A gRPC-level proxy is possible, but introduces security concerns. This proposal balances flexibility, performance, and safety.</p>
     </div>
-  `,
-  open_issues: `
-    <div>
-      <h3>Open Issues</h3>
-      <p>Nothing critical, but caution is required. Proxy mapper and resolver configurations must stay in sync. If they drift, you’ll run into unexpected behavior or failed connections — so keep them aligned!</p>
-    </div>
   `
 };
 
@@ -88,12 +82,15 @@ HTTP CONNECT Proxy Support
 * Last updated: 2017-03-20
 * Discussion at: https://groups.google.com/d/topic/grpc-io/zG7iYpDw6lk/discussion
 
+<section id="abstract">
 ## Abstract
 
 Describes what types of TCP-level proxy setups gRPC will support and
 how those setups interact with client-side per-call load balancing
 policies (e.g., `grpclb` or `round_robin`).
+</section>
 
+<section id="background">
 ## Background
 
 It may be useful to read the following docs before this one:
@@ -110,18 +107,25 @@ without actually understanding anything about the contents of those bytes.
 Note that client-side per-call load-balancing within gRPC requires the
 client to establish connections to individual backends.  Because of this,
 use of a TCP-level proxy may limit the ability to do client-side per-call
-load balacing in some environments.
+load balancing in some environments.
 
+</section>
+
+<section id="related-proposals">
 ### Related Proposals
 
 - [gRFC A2: Service Configs in DNS](https://github.com/grpc/proposal/pull/5)
 - [gRFC A5: Encoding grpclb data in DNS](https://github.com/grpc/proposal/pull/10)
+</section>
 
+<section id="proposal">
 ## Proposal
+</section>
 
 gRPC will support TCP-level proxies via the HTTP CONNECT request,
 defined in [RFC-2817](https://tools.ietf.org/html/rfc2817).
 
+<section id="use-cases">
 ### Use Cases
 
 We are aware of the following use-cases for TCP-level proxying with gRPC:
@@ -155,7 +159,9 @@ We are aware of the following use-cases for TCP-level proxying with gRPC:
     - Name resolution of internal names does not work externally (i.e.,
       all internal resolution must be done via the proxy).
     - Only requests for services behind the proxy will go through it.
+</section>
 
+<section id="proposed-functionality">
 ### Proposed Functionality
 
 We propose the following functionality to support these use cases:
@@ -174,12 +180,16 @@ We propose the following functionality to support these use cases:
       be used to programmatically override the address that we will
       connect to.  It will also be able to set the internal state to trigger
       use of the HTTP CONNECT handshaker.
+</section>
 
+<section id="addressing-use-cases">
 ### Addressing Use Cases
 
 This new functionality will be used to address the three use-cases
 described above, as follows.
+</section>
 
+<section id="case-1">
 #### Case 1
 
 Case 1 will be addressed using the proxy mapper hook for overriding the
@@ -206,7 +216,9 @@ connection would go to a different backend server.)
 
 Also, note that in this case, because the client is not resolving the
 server name itself, it will not have access to the service config.
+</section>
 
+<section id="case-2">
 #### Case 2
 
 This case will be addressed using the proxy mapper hook for overriding the
@@ -228,7 +240,9 @@ with the client opening a separate subchannel to each address.
 
 In this case, because the client is resolving the server name itself,
 the client will have access to the service config as usual.
+</section>
 
+<section id="case-3">
 #### Case 3
 
 This case is similar to case 1 in that the resolver cannot return
@@ -258,7 +272,9 @@ in use; it will not work with client-side policies like `round_robin`.
 Also, note that if a custom resolver is implemented, then the client
 may not have access to the service config.  However, if the DNS SRV
 record is published, then the service config will be returned normally.
+</section>
 
+<section id="rationale">
 ## Rationale
 
 The proposed design allows two different ways of triggering use of
@@ -282,7 +298,9 @@ The trade-off here is that this approach requires that the gRPC-level
 proxy be trusted by all internal servers, which has security implications
 (e.g., a successful attack on the proxy would yield priviledged access
 on all internal servers).
+</section>
 
+<section id="implementation">
 ## Implementation
 
 In C-core, the HTTP CONNECT handshaker was already implemented.
@@ -305,9 +323,13 @@ properties `-Dhttps.proxyHost` and related. grpc-java supports HTTP Basic Proxy
 Authentication and credentials can be specified via the default
 `java.net.Authenticator`. The experimental `GRPC_PROXY_EXP=host:port`
 environment variable enabled limited proxy support starting in v1.0.3.
+</section>
 
+<section id="open-issues-if-applicable">
 ## Open issues (if applicable)
 
 N/A
+
+</section>
 
 </NotesPanel>

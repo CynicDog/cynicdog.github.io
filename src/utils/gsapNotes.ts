@@ -17,8 +17,8 @@ export function initNotesAnimations(notes: Record<string, string>) {
 
         ScrollTrigger.create({
             trigger: sectionEl,
-            start: "top 5%",
-            end: "bottom 5%",
+            start: "top 25%",
+            end: "bottom 0%",
             onEnter: () => showNoteIfNeeded(rawKey, html),
             onEnterBack: () => showNoteIfNeeded(rawKey, html),
             onLeave: () => hideNoteIfNeeded(rawKey),
@@ -42,17 +42,17 @@ export function initNotesAnimations(notes: Record<string, string>) {
         // Clear and insert new content
         const temp = document.createElement("div");
         temp.innerHTML = html;
-        notesPanel.innerHTML = "";
+        notesPanel!.innerHTML = "";
 
         temp.childNodes.forEach((node) => {
-            notesPanel.appendChild(node.cloneNode(true));
+            notesPanel!.appendChild(node.cloneNode(true));
         });
 
         // Animate text
-        scrambleTextRecursively(notesPanel);
+        scrambleTextRecursively(notesPanel!);
 
         // Fade in
-        gsap.to(notesPanel, { autoAlpha: 1, duration: 0.8 });
+        gsap.to(notesPanel, { autoAlpha: 1, duration: 0.2 });
     }
 
     function scrambleTextRecursively(el: HTMLElement | ChildNode) {
