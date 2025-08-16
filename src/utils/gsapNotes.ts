@@ -17,7 +17,7 @@ export function initNotesAnimations(notes: Record<string, string>) {
 
         ScrollTrigger.create({
             trigger: sectionEl,
-            start: "top 25%",
+            start: "top 10%",
             end: "bottom 0%",
             onEnter: () => showNoteIfNeeded(rawKey, html),
             onEnterBack: () => showNoteIfNeeded(rawKey, html),
