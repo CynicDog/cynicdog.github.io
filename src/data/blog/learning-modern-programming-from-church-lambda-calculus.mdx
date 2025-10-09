@@ -1,0 +1,173 @@
+---
+title: Learning Modern Programming Principles from Church’s Lambda Calculus
+author: eunsang
+pubDatetime: 2025-10-09T12:00:00Z
+modDatetime: 2025-10-09T12:00:00Z
+slug: learning-modern-programming-from-church-lambda-calculus
+featured: false
+draft: false
+tags: [programming, functional-programming, lambda-calculus, golang, clean-code]
+description: ""
+---
+
+## Church's proposal
+
+Alonzo Church, in his foundational work on lambda calculus[^1], approached the concept of a function in a very general and abstract way. He described a function not merely as a formula or an equation, but as a rule of correspondence: a procedure that takes an input and produces an output. Crucially, Church allowed that the inputs and outputs of a function could themselves be functions. This idea laid the groundwork for what we now call higher-order functions.
+
+Church also introduced the notion of abstraction, a way to define functions without specifying their arguments upfront. In his system, a function of multiple variables could be viewed as a sequence of single-argument functions, a perspective that emphasizes composability and flexibility. While his work was deeply formal and mathematical, the concepts he described — functions as first-class objects, capable of being passed around and combined — are directly relevant to modern programming languages, even those like Go that are not purely functional.
+
+In essence, Church’s work shows us that functions are more than just computations on numbers: they are objects of computation themselves, capable of being manipulated, passed, and composed in powerful ways.
+
+These are the teachings from his work that we can apply in modern programming.
+
+### 1. **Abstraction and Definitions: Clear, Explicit Components**  
+> The introduction and use of definitions and other abbreviations is, of course, subject to the restriction that there shall never be any ambiguity as to what formula a given abbreviated form stands for… in practice certain further restrictions are also desirable, e.g., that all free variables of the definiens be represented explicitly in the definiendum.
+
+Church’s schematic definitions allow a single definition to represent a whole class of formulas. In modern programming, this is analogous to **generic functions, higher-order functions, or templates**:
+
+- **Parametric Abstraction:** Just as Church uses placeholders like `a`, `b`, `c` to stand for variables systematically, modern functions can take parameters or functions as inputs, abstracting over specific details while preserving structure.  
+- **Reusability:** A schematic definition is not a one-off; it applies to a whole class of formulas. Similarly, well-designed higher-order functions can handle many different inputs or behaviors without rewriting code.  
+- **Predictability & Explicitness:** Even though schematic definitions are abstract, Church enforces strict rules for variable assignments and substitutions. In programming, this translates to clearly specifying function parameters, type constraints, and expected behaviors to prevent ambiguity.  
+
+Schematic definitions in lambda calculus introduce a family of expressions that follow a specific pattern, where each new expression corresponds to a well-formed formula. For example:
+
+$$
+\begin{aligned}
+[M + N] &\longrightarrow (\lambda a.\lambda b.((M \, a)((N \, a) \, b))) \\
+[M \times N] &\longrightarrow (\lambda a.(M \, (N \, a))) \\
+[M^N] &\longrightarrow (N \, M)
+\end{aligned}
+$$
+
+These can be understood as higher-order functions or combinators in modern programming: small, composable building blocks that capture behavior precisely. In Go, we can represent them as below:
+```go
+func Add[M, N func(int) func(int) int](a int) func(b int) int {
+    return func(b int) int {
+        return M(a)(N(a)(b))
+    }
+}
+
+func Multiply[M, N func(int) int](a int) int {
+    return M(N(a))
+}
+
+func Power[M, N func() int]() int {
+    return N()(M())
+}
+```
+
+### 2. **Bound vs Free Variables: Proper Scope Management**  
+> An occurrence of a variable x in a well-formed formula II. is bound or free according as it is or is not an occurrence in a well-formed part of II. of the form $$(λxN)$$… no occurrence of a variable in a well-formed formula is both bound and free.
+
+Just as Church distinguishes between bound and free variables, programmers should manage variable scope carefully. Local variables, closures, and controlled package-level state prevent unintended side effects and improve clarity.
+
+In programming, this distinction maps directly to scope management:
+
+- Bound variables → local variables and function parameters: Variables declared inside a function or closure are only visible there, preventing unintended interference with other parts of the program.
+- Free variables → captured variables in closures or global state: Variables referenced from an outer scope but not declared locally. These need careful handling to avoid hidden dependencies or side effects.
+- No dual roles: Just as in lambda calculus a variable cannot be both bound and free in the same expression, in code a variable should have a single, clear scope to prevent confusion and bugs.
+
+```go
+func adder(x int) func(int) int { 
+    return func(y int) int {      
+        return x + y              
+    }
+}
+
+func main() {
+    add5 := adder(5)
+    fmt.Println(add5(3)) // prints 8
+}
+```
+Here, `x` is bound in the outer function but free in the inner closure, illustrating how closures safely capture variables. 
+
+### 3. **Termination: Ensure Finite Computation**  
+> “…if $$ ((\lambda x_j N_j) W_j) $$ are parts of 𝐴 A, then a number 𝑚 m can be found such that any sequence of contractions on these parts will terminate after at most 𝑚 m contractions… the result is unique up to the order of applying the reduction rules.”
+
+In other words, no matter how complex the formula, applying reductions systematically eventually produces a final, stable result. There is no possibility of an infinite loop within the formal system—termination is guaranteed.
+
+In programming, this principle has a clear analogue: computations should eventually complete. Unbounded recursion, infinite loops, or unending asynchronous processes violate this principle and make programs unpredictable or unsafe. To ensure termination in modern software:
+
+- Algorithm design: Use recursion with a base case, iterative loops with exit conditions, and bounded data structures.
+- Static analysis: Tools like linters or formal verifiers can detect potentially non-terminating code.
+- Testing and monitoring: Automated tests, timeouts, and runtime checks can catch infinite loops or unbounded recursion early.
+
+```go
+func factorial(n int) int {
+    if n <= 1 {
+        return 1 // base case ensures termination
+    }
+    return n * factorial(n-1)
+}
+```
+Here, the recursion always reaches the base case, analogous to Church’s guarantee that every sequence of reductions reaches a unique final formula.
+
+## Practical Abstraction in Go: Higher-Order Functions and Composable Patterns
+
+Church states that schematic definitions are subject to restrictions that prevent ambiguity, such as ensuring all free variables of the definiens (the body of the definition) are explicitly represented in the definiendum (the name/placeholder).
+
+In the lambda-calculus, a schematic definition allows a single placeholder to represent a whole family of formulas (expressions) that follow a specific pattern.
+
+This process is the direct analog of creating reusable, type-safe components in modern code:
+
+1.  Parametric Abstraction: Just as Church uses placeholders like $M$ and $N$ to stand for any well-formed formula, modern programming uses generics (e.g., Go's `[T any]`) or higher-order Functions to abstract over specific data types or behaviors while preserving the operation's structure.
+2.  Explicitness (Safety): Church’s restriction on free variables ensures you know exactly *what* you are defining. In programming, this means explicitly defining all parameters and type constraints in the function signature. This prevents silent side effects or ambiguity, which is the cornerstone of robust software design.
+
+Instead of trying to implement Church arithmetic, which relies on a deep functional encoding, a better Go example illustrates a simpler, clearer schematic pattern: Function Composition.
+
+### Go Illustration: Implementing the `Compose` Schema 
+
+The schema for composition is simple: apply function $F$ to the result of function $G$.
+
+$$
+\begin{aligned}
+[F \circ G] \longrightarrow (\lambda x. (F \, (G \, x)))
+\end{aligned}
+$$
+
+This single schematic definition applies to *any* two functions $F$ and $G$ whose types align.
+
+```go
+package main
+
+import "fmt"
+
+// The Definiens: The generic Compose function (F o G)
+// It abstracts over the types of the two component functions (F and G).
+// F and G are the "explicit free variables" in the Church schema.
+func Compose[A, B, C any](F func(B) C, G func(A) B) func(A) C {
+    // The implementation (the Definiens):
+    // Returns a new function that represents the composition logic.
+    return func(x A) C {
+        return F(G(x))
+    }
+}
+
+// Concrete Functions (Formulas) to substitute into the schema
+func AddTwo(y int) int { return y + 2 }
+func Double(z int) int { return z * 2 }
+
+func main() {
+    // We create a new, well-formed formula (function) by applying the schema.
+    // The resulting function is DoubleThenAddTwo, which is (AddTwo o Double)
+    // Here, AddTwo is F, and Double is G.
+    DoubleThenAddTwo := Compose(AddTwo, Double)
+
+    // The result is predictable and unambiguous, adhering to Church's rules.
+    fmt.Println("Result of (AddTwo o Double) on 5:", DoubleThenAddTwo(5))  
+    
+    // We can use the same schema to define the reverse composition (Double o AddTwo)
+    AddTwoThenDouble := Compose(Double, AddTwo)
+    fmt.Println("Result of (Double o AddTwo) on 5:", AddTwoThenDouble(5)) 
+}
+```
+
+## Conclusion
+
+Church’s lambda calculus might seem abstract and mathematical, but its lessons are surprisingly practical. By thinking of functions as first-class objects, paying attention to variable scope, and designing predictable, composable patterns, we can write clearer, safer, and more reusable code.
+
+In Go, these ideas show up as higher-order functions, generics, and function composition—tools that help us build programs that are easier to reason about and maintain. The takeaway is simple: even if you’re not writing purely functional code, understanding these principles can make you a better programmer, because good abstractions and clear structure always pay off.
+
+--- 
+
+[^1]: Church, A. (1941). *The Calculi of Lambda-Conversion*. Princeton: Princeton University Press.
