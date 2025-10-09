@@ -73,6 +73,8 @@ In programming, this distinction maps directly to scope management:
 - Free variables → captured variables in closures or global state: Variables referenced from an outer scope but not declared locally. These need careful handling to avoid hidden dependencies or side effects.
 - No dual roles: Just as in lambda calculus a variable cannot be both bound and free in the same expression, in code a variable should have a single, clear scope to prevent confusion and bugs.
 
+Closures in Go are a perfect example of how bound and free variables interact cleanly within well-defined scopes.
+
 ```go
 func adder(x int) func(int) int { 
     return func(y int) int {      
