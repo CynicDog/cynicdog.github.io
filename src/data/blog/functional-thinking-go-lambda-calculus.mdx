@@ -41,20 +41,26 @@ $$
 
 These can be understood as higher-order functions or combinators in modern programming: small, composable building blocks that capture behavior precisely. In Go, we can represent them as below:
 ```go
-func Add[M, N func(int) func(int) int](a int) func(b int) int {
-    return func(b int) int {
-        return M(a)(N(a)(b))
+// [M + N] → λa.λb.((M a)((N a) b))
+func Add(M, N func(int) func(int) int) func(int) func(int) int {
+    return func(a int) func(int) int {
+        return func(b int) int {
+            return M(a)(N(a)(b))
+        }
     }
 }
-
-func Multiply[M, N func(int) int](a int) int {
-    return M(N(a))
+// [M × N] → λa.(M (N a))
+func Multiply(M, N func(int) int) func(int) int {
+    return func(a int) int {
+        return M(N(a))
+    }
 }
-
-func Power[M, N func() int]() int {
-    return N()(M())
+// [M ^ N] → N M
+func Power(M func() int, N func(func() int) int) int {
+    return N(M)
 }
 ```
+These Go functions illustrate how Church’s abstract formulas can be represented as composable, higher-order functions that operate on other functions, capturing computation patterns in a reusable way.
 
 ### 2. **Bound vs Free Variables: Proper Scope Management**  
 > An occurrence of a variable x in a well-formed formula II. is bound or free according as it is or is not an occurrence in a well-formed part of II. of the form $$(λxN)$$… no occurrence of a variable in a well-formed formula is both bound and free.
