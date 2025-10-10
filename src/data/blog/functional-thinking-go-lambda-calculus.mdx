@@ -29,38 +29,7 @@ Church’s schematic definitions allow a single definition to represent a whole 
 - **Reusability:** A schematic definition is not a one-off; it applies to a whole class of formulas. Similarly, well-designed higher-order functions can handle many different inputs or behaviors without rewriting code.  
 - **Predictability & Explicitness:** Even though schematic definitions are abstract, Church enforces strict rules for variable assignments and substitutions. In programming, this translates to clearly specifying function parameters, type constraints, and expected behaviors to prevent ambiguity.  
 
-Schematic definitions in lambda calculus introduce a family of expressions that follow a specific pattern, where each new expression corresponds to a well-formed formula. For example:
-
-$$
-\begin{aligned}
-[M + N] &\longrightarrow (\lambda a.\lambda b.((M \, a)((N \, a) \, b))) \\
-[M \times N] &\longrightarrow (\lambda a.(M \, (N \, a))) \\
-[M^N] &\longrightarrow (N \, M)
-\end{aligned}
-$$
-
-These can be understood as higher-order functions or combinators in modern programming: small, composable building blocks that capture behavior precisely. In Go, we can represent them as below:
-```go
-// [M + N] → λa.λb.((M a)((N a) b))
-func Add(M, N func(int) func(int) int) func(int) func(int) int {
-    return func(a int) func(int) int {
-        return func(b int) int {
-            return M(a)(N(a)(b))
-        }
-    }
-}
-// [M × N] → λa.(M (N a))
-func Multiply(M, N func(int) int) func(int) int {
-    return func(a int) int {
-        return M(N(a))
-    }
-}
-// [M ^ N] → N M
-func Power(M func() int, N func(func() int) int) int {
-    return N(M)
-}
-```
-These Go functions illustrate how Church’s abstract formulas can be represented as composable, higher-order functions that operate on other functions, capturing computation patterns in a reusable way.
+Schematic definitions in lambda calculus introduce a family of expressions that follow a specific pattern, where each new expression corresponds to a well-formed formula.
 
 ### 2. **Bound vs Free Variables: Proper Scope Management**  
 > An occurrence of a variable x in a well-formed formula II. is bound or free according as it is or is not an occurrence in a well-formed part of II. of the form $$(λxN)$$… no occurrence of a variable in a well-formed formula is both bound and free.
@@ -75,20 +44,6 @@ In programming, this distinction maps directly to scope management:
 
 Closures in Go are a perfect example of how bound and free variables interact cleanly within well-defined scopes.
 
-```go
-func adder(x int) func(int) int { 
-    return func(y int) int {      
-        return x + y              
-    }
-}
-
-func main() {
-    add5 := adder(5)
-    fmt.Println(add5(3)) // prints 8
-}
-```
-Here, `x` is bound in the outer function but free in the inner closure, illustrating how closures safely capture variables. 
-
 ### 3. **Termination: Ensure Finite Computation**  
 > “…if $$ ((\lambda x_j N_j) W_j) $$ are parts of 𝐴, then a number 𝑚 can be found such that any sequence of contractions on these parts will terminate after at most 𝑚 contractions… the result is unique up to the order of applying the reduction rules.”
 
@@ -99,16 +54,6 @@ In programming, this principle has a clear analogue: computations should eventua
 - Algorithm design: Use recursion with a base case, iterative loops with exit conditions, and bounded data structures.
 - Static analysis: Tools like linters or formal verifiers can detect potentially non-terminating code.
 - Testing and monitoring: Automated tests, timeouts, and runtime checks can catch infinite loops or unbounded recursion early.
-
-```go
-func factorial(n int) int {
-    if n <= 1 {
-        return 1 // base case ensures termination
-    }
-    return n * factorial(n-1)
-}
-```
-Here, the recursion always reaches the base case, analogous to Church’s guarantee that every sequence of reductions reaches a unique final formula.
 
 ## Practical Abstraction in Go: Higher-Order Functions and Composable Patterns
 
