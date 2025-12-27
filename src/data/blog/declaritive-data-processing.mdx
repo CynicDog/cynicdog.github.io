@@ -10,117 +10,94 @@ tags: ["spark", "delta", "data-engineering", "python", "decorators", "pipelines"
 description: ""
 ---
 
-## So I Wanted to Treat Data Pipelines Like Code
+## The Zen of Declarative Data: Moving from "Steps" to "Specs"
 
-There I was, staring at a Spark notebook, thinking: “I know how to write this pipeline imperatively—read CSV, clean, transform, write—but there has to be a cleaner way.”
+If you look at a typical Spark notebook, you usually see a story of verbs: *Read* this, *filter* that, *join* these, *write* there. This is imperative programming—a manual recipe for data.
 
-Traditional pipelines work. But as datasets grow and transformations multiply, **imperative code becomes a spaghetti of reads, writes, and temporary views**. Debugging, refactoring, or adding new rules turns into a juggling act.
+But there is a more powerful way to think about data engineering: Data as Code. Instead of writing a sequence of commands, we define our data structures in a way that the system can "read" and execute for us. We stop writing recipes and start writing specifications.
 
-Then it clicked: why not treat **the pipeline itself as data**? If a program can inspect, transform, and execute code, why can’t a pipeline do the same with transformations and data quality rules?
+### The Problem: The "Opaque" Pipeline
 
-Enter **code as data**—the old Lisp principle where programs are manipulable as structured data, not just lines to execute. If programs can be data, why not pipelines?
+In an imperative pipeline, logic is trapped. If you want to know what the data quality rules are, you have to read every line of the script. It’s a "black box"—you can't easily extract the logic to generate a report or a lineage map because the logic is inextricably tied to the execution.
 
-## Declarative Data Engineering: The Big Picture
+By treating our Pipeline as Code, we make the logic visible, reusable, and structured.
 
-In this notebook, we explore **declarative pipelines using Delta tables in a Marimo environment**, focusing on:
+### Exploring the Raw Reality
 
-* Clear stages: Bronze → Silver → Gold
-* Functional decorators to automate common patterns
-* Self-documenting, reproducible analytics
-* A practical example with transit train schedule data
-
-Instead of manually managing Spark boilerplate, we let **decorators interpret “pipeline data”** and execute transformations automatically. You describe *what* should happen; the decorators handle *how* it happens.
-
-## Exploring NYC Subway Stops
-
-First, let’s visualize the **raw GTFS stops data**. Here’s the full unfiltered table rendered interactively:
+Before we can define what the data *should* be, we have to see what it *is*. Here is our raw GTFS transit data for NYC subway stops—unfiltered and messy:
 
 <iframe
-    src="https://kyrsang.github.io/blog-embed-01/"
-    width="100%"
-    height="560px"
-    style={{
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        overflow: "hidden"
-    }}
-    scrolling="no"
+src="[https://kyrsang.github.io/blog-embed-01/](https://kyrsang.github.io/blog-embed-01/)"
+width="100%"
+height="560px"
+style={{
+borderRadius: "12px",
+boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+overflow: "hidden"
+}}
+scrolling="no"
 />
 
-All stops are included, including parent and child stations.
+### Declarative Engineering: Encoding Intent
 
-## Filtering Stops Declaratively
-
-We can apply a **functional filter** using our `expect_or_drop` decorator to only keep stops that have a `parent_station`. This is a **declarative approach**—we describe *what* to keep, not *how* to iterate and remove rows.
+In a declarative system, we treat our transformations as metadata. By using Python decorators, we wrap our logic in a layer of "Data as Code."
 
 ```python
 @table("silver_trains")
 @expect_or_drop(lambda df: df["parent_station"].notna())
 def transform_bronze_to_silver(bronze_df):
     return bronze_df
-````
+
+```
+
+### Why this is "Data as Code" in Principle
+
+In DaC, we treat an arbitrary structure (like a function or a list of rules) as something that can be exposed via a specialized API. Here, the function itself is the "data" that our decorators consume:
+
+1. The Function is a Data Point: The `@table` decorator "reads" your function. It knows the destination is `silver_trains` before a single row of data even moves.
+2. Logic as Metadata: The `@expect_or_drop` decorator isn't just a filter; it’s <u>executable documentation</u>. We’ve turned a business rule into a data attribute of the pipeline itself.
+
+The result is a refined dataset where the rules are applied automatically by the runtime:
 
 <iframe
-    src="https://kyrsang.github.io/blog-embed-02/"
-    width="100%"
-    height="560px"
-    style={{
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        overflow: "hidden"
-    }}
-    scrolling="no"
+src="[https://kyrsang.github.io/blog-embed-02/](https://kyrsang.github.io/blog-embed-02/)"
+width="100%"
+height="560px"
+style={{
+borderRadius: "12px",
+boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+overflow: "hidden"
+}}
+scrolling="no"
 />
 
-Only stops linked to a `parent_station` remain. Notice how the **pipeline itself is data**: the filtering logic is attached declaratively to the function, and the runtime executes it automatically.
+### Deep Thought: The Power of Introspection
 
-Here, the function is **data**:
+The real "Data as Code" magic happens when you realize that because your pipeline is now structured data, your system can introspect it.
 
-* The `@table` decorator knows how to persist it
-* The `@expect_all` decorator knows what rules to apply
-* The runtime interprets the decorated function and executes the transformations
+In a traditional script, the computer doesn't know what the script *means* until it runs it. In this declarative model, the decorators create a registry. You can write a small utility to "query" your code:
 
-We’re not just writing code—we’re **encoding a data pipeline as structured, executable data**, like Lisp treats nested lists as code and data.
+* *"Show me all tables that have a null-check on `parent_station`."*
+* *"List all tables written to the 'Silver' layer."*
 
-## Functional Utility Decorators: Turning Pipeline Code into Data
+This turns your codebase into a searchable catalog of logic.
 
-Writing Spark pipelines is repetitive. Writing Delta tables, creating temp views, checking data quality—it’s a lot of copy-paste boilerplate.
+### Clean Code Principle: The Open-Closed Pipeline
 
-We solved this by creating **decorators**: `@table`, `@temporary_view`, `@expect_or_drop`, `@expect_all`, `@expect_or_fail`. Here’s why they matter:
+This approach honors the **Open-Closed Principle** (from SOLID): software entities should be open for extension but closed for modification.
 
-1. **Encapsulation of Boilerplate**
-   `@table` writes a DataFrame to Delta with optional partitioning and schema evolution.
+When you need to add a new data quality rule, you don't go into the "guts" of the Spark transformation and risk breaking the join logic. You simply add a new decorator—a new piece of "data" to the function's definition. You are extending the pipeline's behavior without modifying its core execution logic.
 
-2. **Temporary Views Made Simple**
-   `@temporary_view` registers a DataFrame as a Spark temporary view, making SQL queries easy.
+### The Power of the Declarative Approach
 
-3. **Declarative Data Quality Rules**
-   Expectation decorators express rules cleanly:
+By turning our pipeline logic into "data" that our decorators can interpret, we gain three major advantages:
 
-   * `@expect_or_drop` drops rows failing a condition
-   * `@expect_all` flags rows with `is_quarantined`
-   * `@expect_or_fail` halts the pipeline if a critical rule fails
+* Self-Documenting Pipelines: The decorators act as a "manifest," making the storage path and constraints obvious at a glance.
+* Separation of Concerns: The "how" (Delta Lake optimization, schema evolution) is decoupled from the "what" (the business transformation).
+* Pipeline Intelligence: We can programmatically generate lineage and audit logs because our "code" is now a structured data object.
 
-4. **Readable, Reusable Pipeline Code**
-   The **pipeline itself becomes structured data**, with transformations, rules, and storage instructions interpretable by the runtime.
+### Conclusion: From Coder to Architect
 
-## Why This Feels Like Lisp for Data Engineering
+When we treat Data as Code, we stop being people who move bytes from point A to point B. We become architects of a system that understands its own rules.
 
-* Lisp is **homoiconic**: code is represented as data structures programs can manipulate.
-* Our **decorators turn pipeline functions into data structures** that the runtime can inspect, modify, and execute.
-* Data quality rules, persistence paths, and transformation logic are **first-class metadata**—like S-expressions in Lisp.
-
-Treating pipeline definitions as **data to be interpreted** allows us to serialize, reflect, and dynamically compose them in ways imperative pipelines rarely allow.
-
-## Wrapping Up
-
-Declarative pipelines aren’t just “nice-to-have.” They:
-
-* Reduce boilerplate
-* Improve readability
-* Make data quality rules explicit
-* Treat **pipeline code as structured, interpretable data**
-
-By embracing **code-as-data principles**, Spark pipelines become **reproducible, maintainable, and self-documenting**.
-
-Next time you write a pipeline, ask yourself: am I writing code that just executes, or am I encoding **data about how my data should flow**? Because if you do the latter, you’re doing **declarative data engineering with Delta tables** the right way.
+Using Delta Tables and declarative decorators allows us to build pipelines that aren't just a series of commands, but a robust, searchable, and interpretable map of our data’s journey.
