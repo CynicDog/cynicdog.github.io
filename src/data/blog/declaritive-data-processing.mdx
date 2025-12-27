@@ -47,7 +47,14 @@ All stops are included, including parent and child stations.
 
 ## Filtering Stops Declaratively
 
-Now we apply a **functional filter** using our `expect_or_drop` decorator to only keep stops that have a `parent_station`. This is a **declarative approach**—we describe *what* to keep, not *how* to iterate and remove rows.
+We can apply a **functional filter** using our `expect_or_drop` decorator to only keep stops that have a `parent_station`. This is a **declarative approach**—we describe *what* to keep, not *how* to iterate and remove rows.
+
+```python
+@table("silver_trains")
+@expect_all("train_id is not null", "departure_time is valid")
+def transform_bronze_to_silver(bronze_df):
+    return bronze_df.filter("status = 'active'")
+````
 
 <iframe
     src="https://kyrsang.github.io/blog-embed-02/"
@@ -59,37 +66,6 @@ Now we apply a **functional filter** using our `expect_or_drop` decorator to onl
 
 Only stops linked to a `parent_station` remain. Notice how the **pipeline itself is data**: the filtering logic is attached declaratively to the function, and the runtime executes it automatically.
 
-## Functional Utility Decorators: Turning Pipeline Code into Data
-
-Writing Spark pipelines is repetitive. Writing Delta tables, creating temp views, checking data quality—it’s a lot of copy-paste boilerplate.
-
-We solved this by creating **decorators**: `@table`, `@temporary_view`, `@expect_or_drop`, `@expect_all`, `@expect_or_fail`. Here’s why they matter:
-
-1. **Encapsulation of Boilerplate**  
-   `@table` writes a DataFrame to Delta with optional partitioning and schema evolution.
-
-2. **Temporary Views Made Simple**  
-   `@temporary_view` registers a DataFrame as a Spark temporary view, making SQL queries easy.
-
-3. **Declarative Data Quality Rules**  
-   Expectation decorators express rules cleanly:
-
-   * `@expect_or_drop` drops rows failing a condition  
-   * `@expect_all` flags rows with `is_quarantined`  
-   * `@expect_or_fail` halts the pipeline if a critical rule fails
-
-4. **Readable, Reusable Pipeline Code**  
-   The **pipeline itself becomes structured data**, with transformations, rules, and storage instructions interpretable by the runtime.
-
-## Code as Data in Action
-
-```python
-@table("silver_trains")
-@expect_all("train_id is not null", "departure_time is valid")
-def transform_bronze_to_silver(bronze_df):
-    return bronze_df.filter("status = 'active'")
-```
-
 Here, the function is **data**:
 
 * The `@table` decorator knows how to persist it
@@ -98,15 +74,27 @@ Here, the function is **data**:
 
 We’re not just writing code—we’re **encoding a data pipeline as structured, executable data**, like Lisp treats nested lists as code and data.
 
-## Bronze → Silver → Gold: Declarative Medallion Architecture
+## Functional Utility Decorators: Turning Pipeline Code into Data
 
-With declarative pipelines, our **medallion architecture** becomes obvious and reproducible:
+Writing Spark pipelines is repetitive. Writing Delta tables, creating temp views, checking data quality—it’s a lot of copy-paste boilerplate.
 
-* **Bronze**: Raw, unprocessed data
-* **Silver**: Cleaned and enriched tables
-* **Gold**: Aggregated, analytics-ready tables
+We solved this by creating **decorators**: `@table`, `@temporary_view`, `@expect_or_drop`, `@expect_all`, `@expect_or_fail`. Here’s why they matter:
 
-Each stage is **self-contained** and described by decorators. The execution engine reads the metadata encoded in the decorators and handles persistence, temporary views, and data quality enforcement automatically.
+1. **Encapsulation of Boilerplate**
+   `@table` writes a DataFrame to Delta with optional partitioning and schema evolution.
+
+2. **Temporary Views Made Simple**
+   `@temporary_view` registers a DataFrame as a Spark temporary view, making SQL queries easy.
+
+3. **Declarative Data Quality Rules**
+   Expectation decorators express rules cleanly:
+
+   * `@expect_or_drop` drops rows failing a condition
+   * `@expect_all` flags rows with `is_quarantined`
+   * `@expect_or_fail` halts the pipeline if a critical rule fails
+
+4. **Readable, Reusable Pipeline Code**
+   The **pipeline itself becomes structured data**, with transformations, rules, and storage instructions interpretable by the runtime.
 
 ## Why This Feels Like Lisp for Data Engineering
 
