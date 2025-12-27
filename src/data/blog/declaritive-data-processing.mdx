@@ -38,10 +38,10 @@ First, let’s visualize the **raw GTFS stops data**. Here’s the full unfilter
 <iframe
     src="https://kyrsang.github.io/blog-embed-01/"
     width="100%"
-    height="600px"
-    style={{border:"1px solid #ccc"}}
-></iframe>
-
+    height="520px"
+    style={{border:"1px solid #ccc", overflow: "hidden"}}
+    scrolling="no">
+</iframe>
 
 All stops are included, including parent and child stations.
 
@@ -58,11 +58,11 @@ def transform_bronze_to_silver(bronze_df):
 
 <iframe
     src="https://kyrsang.github.io/blog-embed-02/"
-    width="100%"
-    height="600px"
-    style={{border:"1px solid #ccc"}}
-></iframe>
-
+    width="100%"    
+    height="520px"
+    style={{border:"1px solid #ccc", overflow: "hidden"}}
+    scrolling="no">
+</iframe>
 
 Only stops linked to a `parent_station` remain. Notice how the **pipeline itself is data**: the filtering logic is attached declaratively to the function, and the runtime executes it automatically.
 
