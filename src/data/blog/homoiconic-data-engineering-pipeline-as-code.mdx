@@ -43,11 +43,11 @@ scrolling="no"
 In a declarative system, we treat our transformations as metadata. In Python, we can achieve this through an <u>Internal DSL</u>[^3] using decorators. We wrap our logic in a layer of "Data as Code."
 
 ```python
-@table("silver_trains")
-@expect_or_drop(lambda df: df["parent_station"].notna())
-def transform_bronze_to_silver(bronze_df):
-    return bronze_df
-
+@temporary_view(name="silver_view")
+@expect_or_drop("assigned_trains_only", "is_assigned = True")
+def silver_view():
+    df = spark.read.format("delta").load(BRONZE_PATH)
+    return df.withColumn("silver_ingest_ts", F.current_timestamp())
 ```
 
 ### The Principle: Homoiconicity in Data
