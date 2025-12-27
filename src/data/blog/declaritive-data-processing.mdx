@@ -51,7 +51,7 @@ We can apply a **functional filter** using our `expect_or_drop` decorator to onl
 
 ```python
 @table("silver_trains")
-@expect_all("train_id is not null", "departure_time is valid")
+@expect_or_drop(lambda df: df["parent_station"].notna())
 def transform_bronze_to_silver(bronze_df):
     return bronze_df
 ````
