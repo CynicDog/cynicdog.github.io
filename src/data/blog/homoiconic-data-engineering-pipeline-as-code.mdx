@@ -45,7 +45,7 @@ In a declarative system, we treat our transformations as metadata. In Python, we
 ```python
 @temporary_view(name="silver_table")
 @expect_or_drop(lambda df: df["parent_station"].notna())
-def silver_view():
+def silver_table():
     df = spark.read.format("delta").load(BRONZE_PATH)
     return df.withColumn("silver_ingest_ts", F.current_timestamp())
 ```
