@@ -37,8 +37,9 @@ First, let’s visualize the **raw GTFS stops data**. Here’s the full unfilter
 
 <iframe
     src="https://kyrsang.github.io/blog-embed-01/"
-    id="filtered-stops-iframe"
+    id="raw-stops-iframe"
     width="100%"
+    height="600px"
     style="border:1px solid #ccc; overflow:hidden;"
     scrolling="no"
 ></iframe>
@@ -60,6 +61,7 @@ def transform_bronze_to_silver(bronze_df):
     src="https://kyrsang.github.io/blog-embed-02/"
     id="filtered-stops-iframe"
     width="100%"
+    height="600px"
     style="border:1px solid #ccc; overflow:hidden;"
     scrolling="no"
 ></iframe>
@@ -116,3 +118,11 @@ Declarative pipelines aren’t just “nice-to-have.” They:
 By embracing **code-as-data principles**, Spark pipelines become **reproducible, maintainable, and self-documenting**.
 
 Next time you write a pipeline, ask yourself: am I writing code that just executes, or am I encoding **data about how my data should flow**? Because if you do the latter, you’re doing **declarative data engineering with Delta tables** the right way.
+
+<script>
+    iFrameResize({ log: true }, '#filtered-stops-iframe');
+</script>
+
+<script>
+    iFrameResize({ log: true }, '#raw-stops-iframe');
+</script>
