@@ -38,7 +38,7 @@ overflow: "hidden"
 scrolling="no"
 />
 
-### Declarative Engineering: Encoding Intent
+### The Principle: Homoiconicity in Data
 
 In a declarative system, we treat our transformations as metadata. In Python, we can achieve this through an <u>Internal DSL</u>[^3] using decorators. We wrap our logic in a layer of "Data as Code."
 
@@ -49,8 +49,6 @@ def silver_table():
     df = spark.read.format("delta").load(BRONZE_PATH)
     return df.withColumn("silver_ingest_ts", F.current_timestamp())
 ```
-
-### The Principle: Homoiconicity in Data
 
 The Lisp community introduced <u>Homoiconicity</u>[^4]: the radical idea that a program's internal representation should be identical to its data structure. In Lisp, code is just a nested list, and lists can be manipulated by other code.
 
