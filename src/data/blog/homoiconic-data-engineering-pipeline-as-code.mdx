@@ -14,11 +14,11 @@ description: "Exploring the bridge between Lisp-style homoiconicity and modern d
 
 If you look at a typical Spark notebook, you usually see a story of verbs: *Read* this, *filter* that, *join* these, *write* there. In academic terms, this is <u>Imperative Programming</u>—a manual recipe that focuses on the control flow of the machine.
 
-But there is a more powerful paradigm: Data as Code. Borrowing from the "Code is Data" philosophy, we can move toward a <u>Declarative</u> approach. Instead of writing a sequence of commands, we define our data structures in a way that the system can "read" and execute for us. We stop writing recipes and start writing specifications.
+But there is a more powerful paradigm: Data as Code. Borrowing from the "Code is Data" philosophy, we can move toward a <u>Declarative Programming</u>[^1] approach. Instead of writing a sequence of commands, we define our data structures in a way that the system can "read" and execute for us. We stop writing recipes and start writing specifications.
 
 ### The Problem: The "Opaque" Pipeline
 
-In an imperative pipeline, logic is "opaque." If you want to know what the data quality rules are, you have to execute the code or parse complex strings. In Software Engineering theory, this is a violation of <u>Introspection</u>—the ability of a program to examine its own structure at runtime.
+In an imperative pipeline, logic is "opaque." If you want to know what the data quality rules are, you have to execute the code or parse complex strings. In Software Engineering theory, this is a violation of <u>Introspection</u>[^2], the ability of a program to examine its own structure at runtime.
 
 By treating our pipeline as data, we make the logic transparent, reusable, and structured.
 
@@ -27,7 +27,7 @@ By treating our pipeline as data, we make the logic transparent, reusable, and s
 Before we can define what the data *should* be, we have to see what it *is*. Here is our raw GTFS transit data for NYC subway stops—unfiltered and messy:
 
 <iframe
-src="https://kyrsang.github.io/blog-embed-01/"
+src="[https://kyrsang.github.io/blog-embed-01/"
 width="100%"
 height="560px"
 style={{
@@ -40,7 +40,7 @@ scrolling="no"
 
 ### Declarative Engineering: Encoding Intent
 
-In a declarative system, we treat our transformations as metadata. In Python, we can achieve this through an <u>Internal DSL</u> (Domain-Specific Language) using decorators. We wrap our logic in a layer of "Data as Code."
+In a declarative system, we treat our transformations as metadata. In Python, we can achieve this through an <u>Internal DSL</u>[^3] using decorators. We wrap our logic in a layer of "Data as Code."
 
 ```python
 @table("silver_trains")
@@ -52,9 +52,9 @@ def transform_bronze_to_silver(bronze_df):
 
 ### The Principle: Homoiconicity in Data
 
-The Lisp community popularized <u>Homoiconicity</u>: a property where the program's internal representation is the same as its data structure. While Python isn't strictly homoiconic, our approach mimics this principle:
+The Lisp community popularized <u>Homoiconicity</u>[^4]: a property where the program's internal representation is the same as its data structure. While Python isn't strictly homoiconic, our approach mimics this principle:
 
-1. **The Function as an Intermediate Representation (IR):** The `@table` decorator "reads" your function as an object. It extracts the destination (`silver_trains`) and schema metadata before the Spark engine even initializes a task.
+1. **The Function as an Intermediate Representation (IR):** The `@table` decorator "reads" your function as an object. It extracts the destination and schema metadata before the Spark engine even initializes a task.
 2. **Metadata as Executable Documentation:** The `@expect_or_drop` decorator is a <u>Semantic Constraint</u>. We’ve turned a business rule into an attribute of the function object. The code doesn't just *perform* the check; it *is* the check.
 
 The result is a refined dataset where the rules are applied by a runtime that understands the "Data" we encoded in our decorators:
@@ -75,37 +75,26 @@ scrolling="no"
 
 The true academic benefit of Data as Code is <u>Reflection</u>. Because the pipeline is now a structured registry of metadata, your system can "know" itself.
 
-In a traditional script, the computer is blind to the developer's intent. In this declarative model, you can programmatically query your codebase:
-
-* *Static Analysis:* "Show me every table that depends on the `gtfs_stops` source."
-* *Policy Enforcement:* "Ensure no 'Gold' layer table is missing a data quality expectation."
-
-This transforms your repository from a collection of scripts into a <u>Knowledge Graph of Data Logic</u>.
+In a traditional script, the computer is blind to the developer's intent. In this declarative model, you can programmatically query your codebase to enforce policies or ensure that no "Gold" layer table is missing a data quality expectation. This transforms your repository from a collection of scripts into a <u>Knowledge Graph of Data Logic</u>.
 
 ### Clean Code Principle: The Open-Closed Pipeline
 
-This approach honors the <u>Open-Closed Principle</u> (the 'O' in SOLID): software entities should be open for extension but closed for modification.
-
-When you need to add a new data quality rule, you don't modify the "guts" of the transformation function. You simply "decorate" it with a new expectation. You are extending the pipeline's behavior by adding more data (metadata) to the function, rather than rewriting the code (logic).
-
-### The Power of the Declarative Approach
-
-By turning our pipeline logic into "data" that our decorators can interpret, we gain three major advantages:
-
-* **Self-Documenting Architecture:** The decorators act as a "manifest," making storage paths and constraints visible at a glance.
-* **Separation of Concerns:** We decouple the business logic from the infrastructure logic (Delta Lake writes, partitioning, schema evolution).
-* **Pipeline Intelligence:** We can programmatically generate lineage and audit logs because our "code" is a searchable, structured object.
+This approach honors the <u>Open-Closed Principle</u> (the 'O' in SOLID): software entities should be open for extension but closed for modification. When you need to add a new data quality rule, you don't modify the "guts" of the transformation; you simply "decorate" it with a new expectation.
 
 ### Conclusion: From Coder to Architect
 
 When we treat Data as Code, we move beyond the "Data Janitor" phase of engineering. We stop being people who move bytes from point A to point B and become architects of a system that understands its own rules.
 
-Using Delta Tables and declarative decorators allows us to build pipelines that aren't just a series of commands, but a robust, searchable, and interpretable map of our data’s journey.
+---
 
+[^1]:
+**Declarative Programming**: A paradigm that expresses the logic of a computation without describing its control flow. It focuses on *what* the program should accomplish rather than *how* to achieve it.
 
-### Appendix: Academic Glossary
+[^2]:
+**Introspection / Reflection**: The ability of a system to observe and modify its own structure and behavior. In this context, using decorators to inspect function metadata at runtime.
 
-* <u>Homoiconicity</u>: From the Greek *homo* (same) and *icon* (representation). It describes a language where the program structure is represented as a fundamental data structure of the language itself (e.g., Lisp S-expressions). In our pipeline, we treat Python functions as these "icons."
-* <u>Introspection / Reflection</u>: The ability of a system to observe and modify its own structure and behavior. By using decorators, we allow our Spark runtime to "inspect" our Python code to determine how to handle the data.
-* <u>Declarative Programming</u>: A paradigm that expresses the logic of a computation without describing its control flow. It focuses on *what* the program should accomplish rather than *how* to achieve it.
-* <u>Internal DSL</u>: A Domain-Specific Language that is implemented within a general-purpose host language (like Python), utilizing the host's syntax to create a specialized toolset for a specific field (like Data Engineering).
+[^3]:
+**Internal DSL**: A Domain-Specific Language implemented within a general-purpose host language (like Python), utilizing the host's syntax to create a specialized toolset for a specific field.
+
+[^4]:
+**Homoiconicity**: From the Greek *homo* (same) and *icon* (representation). A property of some programming languages in which the primary representation of programs is also a data structure in a primitive type of the language.
