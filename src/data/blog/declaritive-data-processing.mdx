@@ -37,10 +37,10 @@ First, let’s visualize the **raw GTFS stops data**. Here’s the full unfilter
 
 <iframe
     src="https://kyrsang.github.io/blog-embed-01/"
+    id="filtered-stops-iframe"
     width="100%"
-    height="600px"
-    style={{border:"1px solid #ccc"}}
-    title="Unfiltered NYC Subway Stops"
+    style="border:1px solid #ccc; overflow:hidden;"
+    scrolling="no"
 ></iframe>
 
 All stops are included, including parent and child stations.
@@ -53,15 +53,15 @@ We can apply a **functional filter** using our `expect_or_drop` decorator to onl
 @table("silver_trains")
 @expect_all("train_id is not null", "departure_time is valid")
 def transform_bronze_to_silver(bronze_df):
-    return bronze_df.filter("status = 'active'")
+    return bronze_df
 ````
 
 <iframe
     src="https://kyrsang.github.io/blog-embed-02/"
+    id="filtered-stops-iframe"
     width="100%"
-    height="600px"
-    style={{border:"1px solid #ccc"}}
-    title="Filtered NYC Subway Stops"
+    style="border:1px solid #ccc; overflow:hidden;"
+    scrolling="no"
 ></iframe>
 
 Only stops linked to a `parent_station` remain. Notice how the **pipeline itself is data**: the filtering logic is attached declaratively to the function, and the runtime executes it automatically.
