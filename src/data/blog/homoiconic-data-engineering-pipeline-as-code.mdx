@@ -16,13 +16,13 @@ If you look at a typical Spark notebook, you usually see a story of verbs: *Read
 
 But there is a more powerful paradigm: Data as Code. Borrowing from the "Code is Data" philosophy, we can move toward a <u>Declarative Programming</u>[^1] approach. Instead of writing a sequence of commands, we define our data structures in a way that the system can "read" and execute for us. We stop writing recipes and start writing specifications.
 
-### The Problem: The "Opaque" Pipeline
+#### The Problem: The "Opaque" Pipeline
 
 In an imperative pipeline, logic is "opaque." If you want to know what the data quality rules are, you have to execute the code or parse complex strings. In Software Engineering theory, this is a violation of <u>Introspection</u>[^2], the ability of a program to examine its own structure at runtime.
 
 By treating our pipeline as data, we make the logic transparent, reusable, and structured.
 
-### Exploring the Raw Reality
+#### Exploring the Raw Reality
 
 Before we can define what the data *should* be, we have to see what it *is*. Here is our raw GTFS transit data for NYC subway stops—unfiltered and messy:
 
@@ -38,7 +38,7 @@ overflow: "hidden"
 scrolling="no"
 />
 
-### The Principle: Homoiconicity in Data
+#### The Principle: Homoiconicity in Data
 
 In a declarative system, we treat our transformations as metadata. In Python, we can achieve this through an <u>Internal DSL</u>[^3] using decorators. We wrap our logic in a layer of "Data as Code."
 
@@ -71,7 +71,7 @@ overflow: "hidden"
 scrolling="no"
 />
 
-### Deep Thought: The Power of Introspection
+#### Deep Thought: The Power of Introspection
 
 In a standard imperative pipeline, the code is a "black box" to the orchestration layer. The system knows *when* to run a script, but it has no idea *what* the script intends to do until the CPU starts executing lines.
 
@@ -79,7 +79,7 @@ By treating the pipeline as a structured registry of metadata, we enable <u>Refl
 
 This shift transforms a repository from a collection of opaque scripts into a <u>Knowledge Graph of Data Logic</u>. We can programmatically enforce global policies—such as "No Silver-tier table may be written without a non-null constraint"—without ever running the Spark job. The system finally "knows" itself, allowing for automated documentation and lineage that is guaranteed to be accurate because it is derived directly from the code's own structure.
 
-### The Open-Closed Pipeline: Scaling Without Friction
+#### The Open-Closed Pipeline: Scaling Without Friction
 
 Traditional pipelines often suffer from "logic bloat." As business requirements grow, a simple 10-line transformation evolves into a 200-line monolith of `if-else` blocks and validation checks. This violates the <u>Open-Closed Principle</u>: the idea that a system should be open for extension but closed for modification.
 
@@ -90,7 +90,7 @@ In a declarative, homoiconic-inspired setup, we achieve this by separating the *
 
 You are extending the pipeline's capabilities by adding more "data" (metadata) to the function's definition, rather than hacking away at the "guts" of the execution logic. This modularity is what prevents the "spaghetti" effect as data platforms scale.
 
-### Conclusion: From Coder to Architect
+#### Conclusion: From Coder to Architect
 
 When we embrace Data as Code, the role of the Data Engineer undergoes a fundamental shift. We move beyond the "Data Janitor" phase—spending our days manually cleaning and moving bytes from point A to point B.
 
