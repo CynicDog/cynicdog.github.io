@@ -1,0 +1,118 @@
+---
+// TODO: Automate entity extraction from posts and implement Louvain clustering to map semantic research islands
+const nodes = Array.from({ length: 40 }, (_, i) => ({
+  id: i < 20 ? `Patent-${i}` : `Paper-${i}`,
+  group: i < 20 ? "Patents" : "Cited Works",
+  radius: Math.floor(Math.random() * 5) + 1
+}));
+
+const links = Array.from({ length: 30 }, () => ({
+  source: nodes[Math.floor(Math.random() * nodes.length)].id,
+  target: nodes[Math.floor(Math.random() * nodes.length)].id,
+  value: Math.floor(Math.random() * 3) + 1
+}));
+
+const graphData = { nodes, links };
+---
+
+<div class="p-2">
+  <div
+    id="d3-container"
+    class="w-full active:cursor-grabbing overflow-hidden"
+    data-graph={JSON.stringify(graphData)}>
+    <svg id="research-svg" class="w-full h-auto"></svg>
+  </div>
+</div>
+
+<script>
+  import * as d3 from 'd3';
+
+  function initGraph() {
+    const container = document.getElementById('d3-container');
+    const svgElement = document.getElementById('research-svg') as unknown as SVGSVGElement;
+
+    if (!container || !svgElement) return;
+
+    const rawData = container.dataset.graph;
+    if (!rawData) return;
+    const data = JSON.parse(rawData);
+
+    const width = container.clientWidth;
+    const height = 330;
+    const margin = 25;
+
+    const xLimit = width / 2 - margin;
+    const yLimit = height / 2 - margin;
+
+    const svg = d3.select(svgElement)
+      .attr("viewBox", [-width / 2, -height / 2, width, height]);
+
+    svg.selectAll("*").remove();
+
+    // Balanced physics for a "Goldilocks" feel
+    const simulation = d3.forceSimulation(data.nodes)
+      .force("link", d3.forceLink(data.links).id((d: any) => d.id).distance(70)) // Medium distance
+      .force("charge", d3.forceManyBody().strength(-80)) // Moderate repulsion
+      .force("collide", d3.forceCollide().radius((d: any) => d.radius * 2 + 8)) // Clean separation
+      .force("x", d3.forceX().strength(0.1))
+      .force("y", d3.forceY().strength(0.1));
+
+    const link = svg.append("g")
+      .attr("stroke", "#f59e0b")
+      .attr("stroke-opacity", 0.6)
+      .selectAll("line")
+      .data(data.links)
+      .join("line")
+      .attr("stroke-width", (d: any) => Math.sqrt(d.value) / 2);
+
+    const node = svg.append("g")
+      .selectAll("circle")
+      .data(data.nodes)
+      .join("circle")
+      .attr("r", (d: any) => d.radius * 2 + 5)
+      .attr("fill", "#f59e0b")
+      .attr("opacity", (d: any) =>
+        d.group === "Cited Works" ? 1 : 0.3
+      )
+      .attr("stroke", "#000")
+      .attr("stroke-width", .2);
+
+    node.append("title").text((d: any) => d.id);
+
+    node.call(d3.drag<SVGCircleElement, any>()
+      .on("start", (event, d) => {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x; d.fy = d.y;
+      })
+      .on("drag", (event, d) => {
+        d.fx = Math.max(-xLimit, Math.min(xLimit, event.x));
+        d.fy = Math.max(-yLimit, Math.min(yLimit, event.y));
+      })
+      .on("end", (event, d) => {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null; d.fy = null;
+      }));
+
+    simulation.on("tick", () => {
+      node
+        .attr("cx", (d: any) => d.x = Math.max(-xLimit, Math.min(xLimit, d.x)))
+        .attr("cy", (d: any) => d.y = Math.max(-yLimit, Math.min(yLimit, d.y)));
+
+      link
+        .attr("x1", (d: any) => d.source.x)
+        .attr("y1", (d: any) => d.source.y)
+        .attr("x2", (d: any) => d.target.x)
+        .attr("y2", (d: any) => d.target.y);
+    });
+  }
+
+  document.addEventListener("astro:page-load", initGraph);
+  window.addEventListener('resize', initGraph);
+</script>
+
+<style>
+  #research-svg {
+    display: block;
+    max-width: 100%;
+  }
+</style>

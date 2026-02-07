@@ -18,6 +18,8 @@ import IconMoon from "@/assets/icons/IconMoon.svg";
 import { SITE } from "@/config";
 import { SOCIALS } from "@/constants";
 
+import DisjointForceDirectedGraph from '../components/DisjointForceDirectedGraph.astro';
+
 import SmallManStandingBetweenGiantBooks from "@/assets/small-man-standing-between-giant-books.svg";
 import BalancingConcentrationAndTaskManagementWithHeadphones from "@/assets/balancing-concentration-and-task-management-with-headphones.svg";
 import ManWorkingAtDesktopComputer1 from "@/assets/man-working-at-desktop-computer-1.svg";
@@ -59,6 +61,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         }
       </div>
       <Search />
+      <DisjointForceDirectedGraph />
         {
           recentPosts.length > 0 && (
             <section id="recent-posts" class="pt-12 pb-6">
