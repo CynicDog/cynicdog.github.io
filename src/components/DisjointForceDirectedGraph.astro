@@ -79,19 +79,21 @@ const graphData = { nodes, links };
 
     node.append("title").text((d: any) => d.id);
 
-    node.call(d3.drag<SVGCircleElement, any>()
-      .on("start", (event: d3.D3DragEvent<SVGCircleElement, any, any>, d: any) => {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x; d.fy = d.y;
-      })
-      .on("drag", (event: d3.D3DragEvent<SVGCircleElement, any, any>, d: any) => {
-        d.fx = Math.max(-xLimit, Math.min(xLimit, event.x));
-        d.fy = Math.max(-yLimit, Math.min(yLimit, event.y));
-      })
-      .on("end", (event: d3.D3DragEvent<SVGCircleElement, any, any>, d: any) => {
-        if (!event.active) simulation.alphaTarget(0);
-        d.fx = null; d.fy = null;
-      }));
+    node.call(
+      d3.drag<SVGCircleElement, any>()
+        .on("start", (event: any, d: any) => {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x; d.fy = d.y;
+        })
+        .on("drag", (event: any, d: any) => {
+          d.fx = Math.max(-xLimit, Math.min(xLimit, event.x));
+          d.fy = Math.max(-yLimit, Math.min(yLimit, event.y));
+        })
+        .on("end", (event: any, d: any) => {
+          if (!event.active) simulation.alphaTarget(0);
+          d.fx = null; d.fy = null;
+        }) as any // <--- This "as any" fixes the Selection mismatch error
+    );
 
     simulation.on("tick", () => {
       node
