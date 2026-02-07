@@ -61,7 +61,6 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         }
       </div>
       <Search />
-      <DisjointForceDirectedGraph />
         {
           recentPosts.length > 0 && (
             <section id="recent-posts" class="pt-12 pb-6">
@@ -79,11 +78,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     </section>
 
     <section id="archives" class="pt-2 pb-4">
-      <SVG
-        src={BalancingConcentrationAndTaskManagementWithHeadphones}
-        alt=""
-        caption=""
-      />
+      <DisjointForceDirectedGraph />
       <Archives />
     </section>
 
