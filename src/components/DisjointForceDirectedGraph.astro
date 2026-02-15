@@ -1,15 +1,11 @@
----
-// The frontmatter is now clean—data comes from the script!
----
-
-<div class="p-2 border border-orange-500/20 rounded-xl bg-neutral-900/50">
+<div class="p-2">
   <div
     id="d3-container"
     class="w-full active:cursor-grabbing overflow-hidden relative">
     <div id="graph-loader" class="absolute inset-0 flex items-center justify-center text-orange-500 font-mono text-xs">
       LOADING_SEMANTIC_NETWORK...
     </div>
-    <svg id="research-svg" class="w-full h-[500px]"></svg>
+    <svg id="research-svg" class="w-full h-[400px]"></svg>
   </div>
 </div>
 
@@ -23,7 +19,6 @@
 
     if (!container || !svgElement) return;
 
-    // 1. Fetch real data from GitHub
     const url = "https://raw.githubusercontent.com/CynicDog/cynicdog.github.io/refs/heads/main/public/graph.json";
     let data;
     try {
@@ -37,9 +32,11 @@
     }
 
     const width = container.clientWidth;
-    const height = 500;
+    const height = 360;
+    const margin = 15;
+    const xLimit = width / 2 - margin;
+    const yLimit = height / 2 - margin;
 
-    // Color scale for the 'group' (cluster) metric
     const color = d3.scaleOrdinal(d3.schemeTableau10);
 
     const svg = d3.select(svgElement)
@@ -47,19 +44,12 @@
 
     svg.selectAll("*").remove();
 
-    // 2. Physics with Semantic Weight
     const simulation = d3.forceSimulation(data.nodes)
-      .force("link", d3.forceLink(data.links)
-        .id((d: any) => d.id)
-        .distance(100)
-        .strength((d: any) => d.value) // Real semantic similarity drives gravity
-      )
-      .force("charge", d3.forceManyBody().strength(-200))
-      .force("collide", d3.forceCollide().radius((d: any) => d.metrics.radius * 2 + 10))
-      .force("x", d3.forceX().strength(0.05))
-      .force("y", d3.forceY().strength(0.05));
+      .force("link", d3.forceLink(data.links).id((d: any) => d.id).distance(100))
+      .force("charge", d3.forceManyBody().strength(-700))
+      .force("x", d3.forceX())
+      .force("y", d3.forceY());
 
-    // 3. Render Links
     const link = svg.append("g")
       .attr("stroke", "#f59e0b")
       .attr("stroke-opacity", 0.3)
@@ -68,24 +58,24 @@
       .join("line")
       .attr("stroke-width", (d: any) => d.value * 3);
 
-    // 4. Render Nodes
     const node = svg.append("g")
       .selectAll("g")
       .data(data.nodes)
       .join("g")
-      .attr("class", "node-group cursor-pointer");
+      .attr("class", "node-group cursor-pointer")
+      .on("click", (event, d: any) => {
+         window.location.href = `/posts/${d.id}`;
+      });;
 
-    // Main Circle - using the 'radius' from our Python script
     node.append("circle")
       .attr("r", (d: any) => d.metrics.radius * 2)
       .attr("fill", (d: any) => color(d.group))
-      .attr("fill-opacity", (d: any) => 0.4 + (d.metrics.date_score * 0.6)) // Date score drives brightness
+      .attr("fill-opacity", (d: any) => 0.4 + (d.metrics.date_score * 0.6))
       .attr("stroke", (d: any) => color(d.group))
       .attr("stroke-width", 1.5);
 
-    // Text Label (Post ID/Title)
     node.append("text")
-      .text((d: any) => d.id.split('-').slice(0, 3).join(' ')) // truncated for cleanliness
+      .text((d: any) => d.id)
       .attr("dy", (d: any) => d.metrics.radius * 2 + 12)
       .attr("text-anchor", "middle")
       .attr("fill", "#94a3b8")
@@ -93,24 +83,21 @@
       .attr("font-family", "monospace")
       .attr("pointer-events", "none");
 
-    // Keywords on hover
-    node.append("title")
-      .text((d: any) => `Topics: ${d.top_keywords.join(", ")}\nSimilarity: ${d.metrics.size} words`);
-
-    // 5. Drag behavior
     node.call(
       d3.drag<any, any>()
-        .on("start", (event, d) => {
+        .on("start", (event) => {
           if (!event.active) simulation.alphaTarget(0.3).restart();
-          d.fx = d.x; d.fy = d.y;
+          event.subject.fx = event.subject.x;
+          event.subject.fy = event.subject.y;
         })
-        .on("drag", (event, d) => {
-          d.fx = event.x;
-          d.fy = event.y;
+        .on("drag", (event) => {
+          event.subject.fx = Math.max(-xLimit, Math.min(xLimit, event.x));
+          event.subject.fy = Math.max(-yLimit, Math.min(yLimit, event.y));
         })
-        .on("end", (event, d) => {
+        .on("end", (event) => {
           if (!event.active) simulation.alphaTarget(0);
-          d.fx = null; d.fy = null;
+          event.subject.fx = null;
+          event.subject.fy = null;
         })
     );
 
@@ -121,7 +108,11 @@
         .attr("x2", (d: any) => d.target.x)
         .attr("y2", (d: any) => d.target.y);
 
-      node.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
+      node.attr("transform", (d: any) => {
+        d.x = Math.max(-xLimit, Math.min(xLimit, d.x));
+        d.y = Math.max(-yLimit, Math.min(yLimit, d.y));
+        return `translate(${d.x},${d.y})`;
+      });
     });
   }
 
@@ -133,8 +124,7 @@
   #research-svg {
     display: block;
     max-width: 100%;
-    /* Subtle neon glow for the whole graph */
-    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.1));
+    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.05));
   }
   .node-group:hover circle {
     stroke: #fff;
