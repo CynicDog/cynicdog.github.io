@@ -1,110 +1,128 @@
 ---
-// TODO: Automate entity extraction from posts and implement Louvain clustering to map semantic research islands
-const nodes = Array.from({ length: 40 }, (_, i) => ({
-  id: i < 20 ? `Patent-${i}` : `Paper-${i}`,
-  group: i < 20 ? "Patents" : "Cited Works",
-  radius: Math.floor(Math.random() * 5) + 1
-}));
-
-const links = Array.from({ length: 30 }, () => ({
-  source: nodes[Math.floor(Math.random() * nodes.length)].id,
-  target: nodes[Math.floor(Math.random() * nodes.length)].id,
-  value: Math.floor(Math.random() * 3) + 1
-}));
-
-const graphData = { nodes, links };
+// The frontmatter is now clean—data comes from the script!
 ---
 
-<div class="p-2">
+<div class="p-2 border border-orange-500/20 rounded-xl bg-neutral-900/50">
   <div
     id="d3-container"
-    class="w-full active:cursor-grabbing overflow-hidden"
-    data-graph={JSON.stringify(graphData)}>
-    <svg id="research-svg" class="w-full h-auto"></svg>
+    class="w-full active:cursor-grabbing overflow-hidden relative"
+    data-url="https://raw.githubusercontent.com/CynicDog/cynicdog.github.io/refs/heads/main/public/graph.json">
+    <div id="graph-loader" class="absolute inset-0 flex items-center justify-center text-orange-500 font-mono text-xs">
+      LOADING_SEMANTIC_NETWORK...
+    </div>
+    <svg id="research-svg" class="w-full h-[500px]"></svg>
   </div>
 </div>
 
 <script>
   import * as d3 from 'd3';
 
-  function initGraph() {
+  async function initGraph() {
     const container = document.getElementById('d3-container');
     const svgElement = document.getElementById('research-svg') as unknown as SVGSVGElement;
+    const loader = document.getElementById('graph-loader');
 
     if (!container || !svgElement) return;
 
-    const rawData = container.dataset.graph;
-    if (!rawData) return;
-    const data = JSON.parse(rawData);
+    // 1. Fetch real data from GitHub
+    const url = container.dataset.url;
+    let data;
+    try {
+      const response = await fetch(url);
+      data = await response.json();
+      if (loader) loader.style.display = 'none';
+    } catch (e) {
+      console.error("Failed to load graph data", e);
+      if (loader) loader.innerText = "ERROR_LOADING_DATA";
+      return;
+    }
 
     const width = container.clientWidth;
-    const height = 450;
-    const margin = 25;
+    const height = 500;
 
-    const xLimit = width / 2 - margin;
-    const yLimit = height / 2 - margin;
+    // Color scale for the 'group' (cluster) metric
+    const color = d3.scaleOrdinal(d3.schemeTableau10);
 
     const svg = d3.select(svgElement)
       .attr("viewBox", [-width / 2, -height / 2, width, height]);
 
     svg.selectAll("*").remove();
 
-    // Balanced physics for a "Goldilocks" feel
+    // 2. Physics with Semantic Weight
     const simulation = d3.forceSimulation(data.nodes)
-      .force("link", d3.forceLink(data.links).id((d: any) => d.id).distance(70)) // Medium distance
-      .force("charge", d3.forceManyBody().strength(-80)) // Moderate repulsion
-      .force("collide", d3.forceCollide().radius((d: any) => d.radius * 2 + 8)) // Clean separation
-      .force("x", d3.forceX().strength(0.1))
-      .force("y", d3.forceY().strength(0.1));
+      .force("link", d3.forceLink(data.links)
+        .id((d: any) => d.id)
+        .distance(100)
+        .strength(d => d.value) // Real semantic similarity drives gravity
+      )
+      .force("charge", d3.forceManyBody().strength(-200))
+      .force("collide", d3.forceCollide().radius((d: any) => d.metrics.radius * 2 + 10))
+      .force("x", d3.forceX().strength(0.05))
+      .force("y", d3.forceY().strength(0.05));
 
+    // 3. Render Links
     const link = svg.append("g")
       .attr("stroke", "#f59e0b")
-      .attr("stroke-opacity", 0.6)
+      .attr("stroke-opacity", 0.3)
       .selectAll("line")
       .data(data.links)
       .join("line")
-      .attr("stroke-width", (d: any) => Math.sqrt(d.value) / 2);
+      .attr("stroke-width", (d: any) => d.value * 3);
 
+    // 4. Render Nodes
     const node = svg.append("g")
-      .selectAll("circle")
+      .selectAll("g")
       .data(data.nodes)
-      .join("circle")
-      .attr("r", (d: any) => d.radius * 2 + 5)
-      .attr("fill", "#f59e0b")
-      .attr("opacity", (d: any) =>
-        d.group === "Cited Works" ? 1 : 0.3
-      )
-      .attr("stroke", "#000")
-      .attr("stroke-width", .2);
+      .join("g")
+      .attr("class", "node-group cursor-pointer");
 
-    node.append("title").text((d: any) => d.id);
+    // Main Circle - using the 'radius' from our Python script
+    node.append("circle")
+      .attr("r", (d: any) => d.metrics.radius * 2)
+      .attr("fill", (d: any) => color(d.group))
+      .attr("fill-opacity", (d: any) => 0.4 + (d.metrics.date_score * 0.6)) // Date score drives brightness
+      .attr("stroke", (d: any) => color(d.group))
+      .attr("stroke-width", 1.5);
 
+    // Text Label (Post ID/Title)
+    node.append("text")
+      .text((d: any) => d.id.split('-').slice(0, 3).join(' ')) // truncated for cleanliness
+      .attr("dy", (d: any) => d.metrics.radius * 2 + 12)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#94a3b8")
+      .attr("font-size", "10px")
+      .attr("font-family", "monospace")
+      .attr("pointer-events", "none");
+
+    // Keywords on hover
+    node.append("title")
+      .text((d: any) => `Topics: ${d.top_keywords.join(", ")}\nSimilarity: ${d.metrics.size} words`);
+
+    // 5. Drag behavior
     node.call(
-      d3.drag<SVGCircleElement, any>()
-        .on("start", (event: any, d: any) => {
+      d3.drag<any, any>()
+        .on("start", (event, d) => {
           if (!event.active) simulation.alphaTarget(0.3).restart();
           d.fx = d.x; d.fy = d.y;
         })
-        .on("drag", (event: any, d: any) => {
-          d.fx = Math.max(-xLimit, Math.min(xLimit, event.x));
-          d.fy = Math.max(-yLimit, Math.min(yLimit, event.y));
+        .on("drag", (event, d) => {
+          d.fx = event.x;
+          d.fy = event.y;
         })
-        .on("end", (event: any, d: any) => {
+        .on("end", (event, d) => {
           if (!event.active) simulation.alphaTarget(0);
           d.fx = null; d.fy = null;
-        }) as any // <--- This "as any" fixes the Selection mismatch error
+        })
     );
 
     simulation.on("tick", () => {
-      node
-        .attr("cx", (d: any) => d.x = Math.max(-xLimit, Math.min(xLimit, d.x)))
-        .attr("cy", (d: any) => d.y = Math.max(-yLimit, Math.min(yLimit, d.y)));
-
       link
         .attr("x1", (d: any) => d.source.x)
         .attr("y1", (d: any) => d.source.y)
         .attr("x2", (d: any) => d.target.x)
         .attr("y2", (d: any) => d.target.y);
+
+      node.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
     });
   }
 
@@ -116,5 +134,15 @@ const graphData = { nodes, links };
   #research-svg {
     display: block;
     max-width: 100%;
+    /* Subtle neon glow for the whole graph */
+    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.1));
+  }
+  .node-group:hover circle {
+    stroke: #fff;
+    stroke-width: 2px;
+    fill-opacity: 1;
+  }
+  .node-group:hover text {
+    fill: #fff;
   }
 </style>
