@@ -3,39 +3,118 @@
     {
       "id": "drawing-conclusions-excalidraw-work",
       "group": 2,
-      "radius": 5
+      "top_keywords": [
+        "diagram",
+        "business",
+        "flow"
+      ],
+      "metrics": {
+        "size": 475,
+        "date_score": 1.0,
+        "radius": 6
+      }
     },
     {
       "id": "homoiconic-data-engineering-pipeline-as-code",
       "group": 4,
-      "radius": 5
+      "top_keywords": [
+        "data",
+        "pipeline",
+        "declarative"
+      ],
+      "metrics": {
+        "size": 944,
+        "date_score": 1.0,
+        "radius": 7
+      }
     },
     {
       "id": "functional-thinking-go-lambda-calculus",
       "group": 0,
-      "radius": 5
+      "top_keywords": [
+        "church",
+        "variables",
+        "functions"
+      ],
+      "metrics": {
+        "size": 1378,
+        "date_score": 1.0,
+        "radius": 8
+      }
     },
     {
       "id": "building-xds-control-plane-python-embracing-dynamic-networking",
-      "group": 1,
-      "radius": 5
+      "group": 3,
+      "top_keywords": [
+        "envoy",
+        "server",
+        "xds"
+      ],
+      "metrics": {
+        "size": 1115,
+        "date_score": 1.0,
+        "radius": 7
+      }
     },
     {
       "id": "from-manual-proto-hunting-to-buf-sanity",
-      "group": 1,
-      "radius": 5
+      "group": 3,
+      "top_keywords": [
+        "proto",
+        "buf",
+        "grpc"
+      ],
+      "metrics": {
+        "size": 653,
+        "date_score": 1.0,
+        "radius": 6
+      }
     },
     {
       "id": "github-as-a-web-app-for-agile-development",
-      "group": 3,
-      "radius": 5
+      "group": 1,
+      "top_keywords": [
+        "agile",
+        "github",
+        "trigger"
+      ],
+      "metrics": {
+        "size": 682,
+        "date_score": 1.0,
+        "radius": 6
+      }
     }
   ],
   "links": [
     {
+      "source": "drawing-conclusions-excalidraw-work",
+      "target": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "value": 0.345,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "drawing-conclusions-excalidraw-work",
+      "target": "github-as-a-web-app-for-agile-development",
+      "value": 0.539,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "homoiconic-data-engineering-pipeline-as-code",
+      "target": "functional-thinking-go-lambda-calculus",
+      "value": 0.357,
+      "rel_type": "semantic-match"
+    },
+    {
       "source": "building-xds-control-plane-python-embracing-dynamic-networking",
       "target": "from-manual-proto-hunting-to-buf-sanity",
-      "value": 0.507
+      "value": 0.575,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "target": "github-as-a-web-app-for-agile-development",
+      "value": 0.34,
+      "rel_type": "semantic-match"
     }
   ]
 }
