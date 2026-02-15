@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir \
 
 COPY scripts /scripts
 
-ENTRYPOINT ["python", "/scripts/analyize.py"]
+ENTRYPOINT ["python", "/scripts/analyze.py"]
