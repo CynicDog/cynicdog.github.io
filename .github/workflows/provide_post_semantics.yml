@@ -1,0 +1,24 @@
+name: Update Semantic Graph
+
+on:
+  push:
+    paths:
+      - 'src/data/blog/**'
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate Graph Data
+        uses: ./
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/graph.json
+          git commit -m "chore: update semantic graph" || echo "No changes to commit"
+          git push

@@ -1,0 +1,5 @@
+name: 'Semantic Blog Analyzer'
+description: 'Generates D3-compatible JSON from blog post embeddings'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
