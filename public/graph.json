@@ -1,0 +1,41 @@
+{
+  "nodes": [
+    {
+      "id": "drawing-conclusions-excalidraw-work",
+      "group": 2,
+      "radius": 5
+    },
+    {
+      "id": "homoiconic-data-engineering-pipeline-as-code",
+      "group": 4,
+      "radius": 5
+    },
+    {
+      "id": "functional-thinking-go-lambda-calculus",
+      "group": 0,
+      "radius": 5
+    },
+    {
+      "id": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "group": 1,
+      "radius": 5
+    },
+    {
+      "id": "from-manual-proto-hunting-to-buf-sanity",
+      "group": 1,
+      "radius": 5
+    },
+    {
+      "id": "github-as-a-web-app-for-agile-development",
+      "group": 3,
+      "radius": 5
+    }
+  ],
+  "links": [
+    {
+      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "target": "from-manual-proto-hunting-to-buf-sanity",
+      "value": 0.507
+    }
+  ]
+}
