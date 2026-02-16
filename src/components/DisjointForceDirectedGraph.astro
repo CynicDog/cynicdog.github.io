@@ -74,14 +74,27 @@
       .attr("stroke", (d: any) => color(d.group))
       .attr("stroke-width", 1.5);
 
+    const wordsPerLine = 3;
     node.append("text")
-      .text((d: any) => d.id)
-      .attr("dy", (d: any) => d.metrics.radius * 2 + 12)
       .attr("text-anchor", "middle")
       .attr("fill", "#94a3b8")
       .attr("font-size", "10px")
       .attr("font-family", "monospace")
-      .attr("pointer-events", "none");
+      .attr("pointer-events", "none")
+      .attr("y", (d: any) => d.metrics.radius * 2 + 12)
+      .selectAll("tspan")
+      .data((d: any) => {
+        const words = d.id.split(/[-_\s]+/);
+        const lines = [];
+        for (let i = 0; i < words.length; i += wordsPerLine) {
+          lines.push(words.slice(i, i + wordsPerLine).join(" "));
+        }
+        return lines;
+      })
+      .join("tspan")
+      .attr("x", 0)
+      .attr("dy", (d, i) => i === 0 ? 0 : "1.2em")
+      .text(d => d);
 
     node.call(
       d3.drag<any, any>()
