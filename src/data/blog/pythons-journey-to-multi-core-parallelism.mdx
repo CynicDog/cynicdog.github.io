@@ -1,0 +1,143 @@
+---
+title: "Python’s Journey to Multi-Core Parallelism"
+author: eunsang
+pubDatetime: 2026-02-28T00:00:00Z
+modDatetime: 2026-02-28T00:00:00Z
+slug: pythons-journey-to-multi-core-parallelism
+featured: false
+draft: false
+tags: ["python"]
+description: ""
+---
+
+
+The <u>Global Interpreter Lock (GIL)</u> has been the most famous "ceiling" in the world of Python. It was the guardian of memory safety, but also the barrier that kept Python from truly embracing the multi-core era.
+
+In this post, we’ll look at an important architectural change in Python: the move from a single global lock (the GIL) toward a per-interpreter locking model. This work, led in large part by Eric Snow, laid the groundwork for the experimental free-threaded builds introduced in Python 3.13 and 3.14.
+
+For a full look at the implementation changes that made this possible, you can browse the actual pull request on GitHub, [`gh-99113: A Per-Interpreter GIL!
+#104210`](https://github.com/python/cpython/pull/104210)
+
+### The Heritage: Why the Lock Existed
+
+To understand the code, we must understand the "why." CPython uses <u>Reference Counting</u> for memory management. Every time a variable is assigned, a counter goes up; when it's deleted, it goes down.
+If two threads try to update the same counter at the exact same time, the count could become corrupted—leading to memory leaks or, worse, "use-after-free" crashes. To solve this simply, Python 1.5 introduced the GIL. It was a "one-at-a-time" rule: only one thread could execute Python bytecode at a once. It made Python stable and easy to write, but it meant our 16-core CPUs were often sitting idle.
+
+
+### The Architecture: Eric Snow’s Refactoring
+
+The mission of [PEP 684](https://peps.python.org/pep-0684/) was to stop sharing the GIL. To do this, Eric Snow had to perform "open-heart surgery" on CPython’s internal state. He had to move the lock from the runtime (the whole process) into the interpreter (the specific instance).
+
+#### 1. Migrating the State: The New "Home" for the GIL
+
+In the refactored code, the GIL was moved into the `PyInterpreterState` struct (internally called `struct _is`). This struct holds everything that makes an interpreter "tick"—and now, that includes its own lock.
+
+```diff
+/* Include/internal/pycore_interp.h */
+
+struct _is {
+    PyInterpreterState *next;
+
+    /* Many systems were moved here to achieve isolation */
+    struct _obmalloc_state obmalloc;
+    struct _ceval_state ceval;
+    struct _gc_runtime_state gc;
+    struct _import_state imports;
+
+    ...
+
++   /* The per-interpreter GIL.
++      This is the 'heart' of PEP 684. Each interpreter now
++      carries its own lock, rather than sharing a global one. */
++   struct _gil_runtime_state _gil;
+
+    PyThreadState _initial_thread;
+};
+```
+
+#### 2. Switching the Context: From Main to Current
+
+One of the most critical logic shifts happened in how Python identifies which GIL to manage. Previously, code was hard-coded to look at the Main interpreter. Now, it looks at the "Current" interpreter active on the thread.
+
+```diff
+/* Python/ceval_gil.c */
+
+void _PyEval_SetSwitchInterval(unsigned long microseconds)
+{
+-    /* XXX per-interpreter GIL */
+-    PyInterpreterState *interp = _PyInterpreterState_Main();
++    PyInterpreterState *interp = _PyInterpreterState_Get();
+     struct _gil_runtime_state *gil = interp->ceval.gil;
+     assert(gil != NULL);
+     gil->interval = microseconds;
+}
+
+unsigned long _PyEval_GetSwitchInterval(void)
+{
+-    /* XXX per-interpreter GIL */
+-    PyInterpreterState *interp = _PyInterpreterState_Main();
++    PyInterpreterState *interp = _PyInterpreterState_Get();
+     struct _gil_runtime_state *gil = interp->ceval.gil;
+     assert(gil != NULL);
+     return gil->interval;
+}
+```
+
+### 3. Giving Choice: The `own_gil` Flag and the Lifecycle
+
+The refactoring didn't just force everyone to use new locks; it provided a bridge. By adding an `own_gil` flag to the configuration, Python can now decide whether a new sub-interpreter should share the main lock (Legacy mode) or have its own (Parallel mode).
+
+```c
+/* Include/cpython/initconfig.h */
+
+typedef struct {
+    int allow_threads;
+    int check_multi_interp_extensions;
+    int own_gil; // The magic switch for true parallelism
+} PyInterpreterConfig;
+```
+
+This configuration isn't just a passive value; it changes how the Python interpreter "wakes up." In the internal lifecycle code (`pylifecycle.c`), we can see how Eric Snow updated the initialization process. The main interpreter is explicitly granted its own GIL, while sub-interpreters are created based on the `own_gil` requirement passed through the config.
+
+```diff
+/* Python/pylifecycle.c */
+
+static PyStatus
+- init_interp_create_gil(PyThreadState *tstate)
++ init_interp_create_gil(PyThreadState *tstate, int own_gil)
+{
+     PyStatus status;
+     ...
+-    status = _PyEval_InitGIL(tstate);
++    status = _PyEval_InitGIL(tstate, own_gil);
+     ...
+}
+
+...
+
+-    /* Legacy initialization of the main interpreter */
+     PyInterpreterConfig config = _PyInterpreterConfig_LEGACY_INIT;
++    // The main interpreter always has its own GIL to ensure
++    // the primary process is never constrained by others.
++    config.own_gil = 1;
++
+     status = init_interp_settings(interp, &config);
+     ...
+-    status = init_interp_create_gil(tstate);
++    status = init_interp_create_gil(tstate, config.own_gil);
+
+```
+By threading this `own_gil` variable through the lifecycle, Python ensures that the "One-at-a-time" rule is now an **option** rather than a hard-coded law. It allows the main thread to stay stable while giving power-users the ability to spin up new interpreters that run at full speed on separate cores.
+
+
+When a thread is created, the system now checks this flag. If `own_gil` is true, it initializes a private lock (`init_own_gil`) instead of pointing back to the main one.
+
+### Conclusion
+
+This refactoring was more than just a code cleanup; it was a massive technical debt repayment. By moving global variables and the lock itself into the PyInterpreterState, the community finally achieved Interpreter Isolation.
+
+Before these changes, sub-interpreters were like people living in separate rooms but sharing a single, heavy front-door key. Now, each room can have its own key.
+
+This work was the essential "Phase 1." Without a Per-Interpreter GIL, the "Free-threaded" (No-GIL) mode introduced in Python 3.13 and polished in 3.14 would have been architecturally impossible. We have moved from a world where we had one security guard for a whole building, to a world where every apartment can hire its own.
+
+It is a quiet revolution. While most users won't see the C code, they will feel the results: a Python that finally stretches its wings across every core of a modern machine.
