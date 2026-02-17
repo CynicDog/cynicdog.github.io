@@ -2,11 +2,11 @@
   "nodes": [
     {
       "id": "drawing-conclusions-excalidraw-work",
-      "group": 2,
+      "group": 4,
       "top_keywords": [
         "diagram",
-        "business",
-        "flow"
+        "helps",
+        "business"
       ],
       "metrics": {
         "size": 475,
@@ -16,7 +16,7 @@
     },
     {
       "id": "homoiconic-data-engineering-pipeline-as-code",
-      "group": 4,
+      "group": 2,
       "top_keywords": [
         "data",
         "pipeline",
@@ -33,11 +33,25 @@
       "group": 0,
       "top_keywords": [
         "church",
-        "variables",
+        "function",
         "functions"
       ],
       "metrics": {
         "size": 1378,
+        "date_score": 1.0,
+        "radius": 8
+      }
+    },
+    {
+      "id": "cli-vs-sdk-in-mlops",
+      "group": 2,
+      "top_keywords": [
+        "cli",
+        "sdk",
+        "ci"
+      ],
+      "metrics": {
+        "size": 1308,
         "date_score": 1.0,
         "radius": 8
       }
