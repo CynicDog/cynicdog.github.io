@@ -10,7 +10,6 @@ tags: ["python"]
 description: ""
 ---
 
-
 The <u>Global Interpreter Lock (GIL)</u> has been the most famous "ceiling" in the world of Python. It was the guardian of memory safety, but also the barrier that kept Python from truly embracing the multi-core era.
 
 In this post, we’ll look at an important architectural change in Python: the move from a single global lock (the GIL) toward a per-interpreter locking model. This work, led in large part by Eric Snow, laid the groundwork for the experimental free-threaded builds introduced in Python 3.13 and 3.14.
@@ -73,7 +72,7 @@ void _PyEval_SetSwitchInterval(unsigned long microseconds)
 }
 ```
 
-### 3. Giving Choice: The `own_gil` Flag and the Lifecycle
+#### 3. Giving Choice: The `own_gil` Flag and the Lifecycle
 
 The refactoring didn't just force everyone to use new locks; it provided a bridge. By adding an `own_gil` flag to the configuration, Python can now decide whether a new sub-interpreter should share the main lock (Legacy mode) or have its own (Parallel mode).
 
@@ -110,7 +109,7 @@ static PyStatus
 +    // The main interpreter always has its own GIL to ensure
 +    // the primary process is never constrained by others.
 +    config.own_gil = 1;
-+
+
      status = init_interp_settings(interp, &config);
      ...
 -    status = init_interp_create_gil(tstate);
