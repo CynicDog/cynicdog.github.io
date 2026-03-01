@@ -71,16 +71,6 @@ void _PyEval_SetSwitchInterval(unsigned long microseconds)
      assert(gil != NULL);
      gil->interval = microseconds;
 }
-
-unsigned long _PyEval_GetSwitchInterval(void)
-{
--    /* XXX per-interpreter GIL */
--    PyInterpreterState *interp = _PyInterpreterState_Main();
-+    PyInterpreterState *interp = _PyInterpreterState_Get();
-     struct _gil_runtime_state *gil = interp->ceval.gil;
-     assert(gil != NULL);
-     return gil->interval;
-}
 ```
 
 ### 3. Giving Choice: The `own_gil` Flag and the Lifecycle
