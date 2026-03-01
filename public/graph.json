@@ -2,11 +2,11 @@
   "nodes": [
     {
       "id": "drawing-conclusions-excalidraw-work",
-      "group": 4,
+      "group": 2,
       "top_keywords": [
         "diagram",
-        "helps",
-        "business"
+        "business",
+        "flow"
       ],
       "metrics": {
         "size": 475,
@@ -16,7 +16,7 @@
     },
     {
       "id": "homoiconic-data-engineering-pipeline-as-code",
-      "group": 2,
+      "group": 4,
       "top_keywords": [
         "data",
         "pipeline",
@@ -29,8 +29,22 @@
       }
     },
     {
-      "id": "functional-thinking-go-lambda-calculus",
+      "id": "pythons-journey-to-multi-core-parallelism",
       "group": 0,
+      "top_keywords": [
+        "gil",
+        "interpreter",
+        "struct"
+      ],
+      "metrics": {
+        "size": 931,
+        "date_score": 1.0,
+        "radius": 7
+      }
+    },
+    {
+      "id": "functional-thinking-go-lambda-calculus",
+      "group": 4,
       "top_keywords": [
         "church",
         "function",
@@ -44,7 +58,7 @@
     },
     {
       "id": "cli-and-sdk-in-mlops",
-      "group": 2,
+      "group": 3,
       "top_keywords": [
         "cli",
         "sdk",
@@ -58,7 +72,7 @@
     },
     {
       "id": "building-xds-control-plane-python-embracing-dynamic-networking",
-      "group": 3,
+      "group": 1,
       "top_keywords": [
         "envoy",
         "server",
@@ -72,7 +86,7 @@
     },
     {
       "id": "from-manual-proto-hunting-to-buf-sanity",
-      "group": 3,
+      "group": 1,
       "top_keywords": [
         "proto",
         "buf",
@@ -86,11 +100,11 @@
     },
     {
       "id": "github-as-a-web-app-for-agile-development",
-      "group": 1,
+      "group": 2,
       "top_keywords": [
         "agile",
         "github",
-        "trigger"
+        "issue"
       ],
       "metrics": {
         "size": 682,
