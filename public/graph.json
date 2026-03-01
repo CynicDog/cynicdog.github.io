@@ -4,9 +4,9 @@
       "id": "drawing-conclusions-excalidraw-work",
       "group": 2,
       "top_keywords": [
-        "diagram",
         "business",
-        "flow"
+        "flow",
+        "excalidrawsvg"
       ],
       "metrics": {
         "size": 475,
@@ -37,7 +37,7 @@
         "struct"
       ],
       "metrics": {
-        "size": 931,
+        "size": 900,
         "date_score": 1.0,
         "radius": 7
       }
@@ -104,7 +104,7 @@
       "top_keywords": [
         "agile",
         "github",
-        "issue"
+        "trigger"
       ],
       "metrics": {
         "size": 682,
