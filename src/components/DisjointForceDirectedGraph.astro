@@ -5,7 +5,7 @@
     <div id="graph-loader" class="absolute inset-0 flex items-center justify-center text-orange-500 font-mono text-xs">
       LOADING_SEMANTIC_NETWORK...
     </div>
-    <svg id="research-svg" class="w-full h-[400px]"></svg>
+    <svg id="research-svg" class="w-full h-[550px]"></svg>
   </div>
 </div>
 
@@ -46,7 +46,7 @@
 
     const simulation = d3.forceSimulation(data.nodes)
       .force("link", d3.forceLink(data.links).id((d: any) => d.id).distance(100))
-      .force("charge", d3.forceManyBody().strength(-700))
+      .force("charge", d3.forceManyBody().strength(-1200))
       .force("x", d3.forceX())
       .force("y", d3.forceY());
 
@@ -78,7 +78,7 @@
     node.append("text")
       .attr("text-anchor", "middle")
       .attr("fill", "#94a3b8")
-      .attr("font-size", "10px")
+      .attr("font-size", "13px")
       .attr("font-family", "monospace")
       .attr("pointer-events", "none")
       .attr("y", (d: any) => d.metrics.radius * 2 + 12)

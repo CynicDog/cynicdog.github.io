@@ -33,12 +33,13 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 
 <Layout>
   <main id="main-content" data-layout="index">
-    <section id="entry" class="pb-4">
+    <section id="entry">
       <SVG
         src={SmallManStandingBetweenGiantBooks}
         alt=""
         caption=""
       />
+      <DisjointForceDirectedGraph />
       <div class="mx-auto my-2 px-2 flex max-w-app flex-col items-center justify-between sm:flex-row">
         <div class="col-span-2">
           <Socials centered />
@@ -61,6 +62,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         }
       </div>
       <Search />
+
         {
           recentPosts.length > 0 && (
             <section id="recent-posts" class="pt-12 pb-6">
@@ -74,11 +76,9 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
             </section>
           )
         }
-
     </section>
 
     <section id="archives" class="pt-2 pb-4">
-      <DisjointForceDirectedGraph />
       <Archives />
     </section>
 
