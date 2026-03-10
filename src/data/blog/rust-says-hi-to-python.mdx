@@ -220,10 +220,6 @@ Since the implementation lives in Rust while the public API is exposed to Python
 particularly important. It verifies that the extension behaves correctly from the user's perspective, including object
 construction, method calls, and error propagation across the Rust–Python boundary.
 
-Many Rust-backed Python libraries, such as `polars`, follow this approach: the core logic is implemented in Rust for
-performance, while tests are written in Python to ensure the exposed API behaves consistently and integrates smoothly
-with the Python ecosystem.
-
 Since our greeting implementation is very simple, we only need three test cases:
 
 ```python
