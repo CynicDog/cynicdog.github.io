@@ -2,11 +2,11 @@
   "nodes": [
     {
       "id": "drawing-conclusions-excalidraw-work",
-      "group": 2,
+      "group": 3,
       "top_keywords": [
+        "diagram",
         "business",
-        "flow",
-        "excalidrawsvg"
+        "flow"
       ],
       "metrics": {
         "size": 475,
@@ -16,7 +16,7 @@
     },
     {
       "id": "homoiconic-data-engineering-pipeline-as-code",
-      "group": 4,
+      "group": 2,
       "top_keywords": [
         "data",
         "pipeline",
@@ -29,26 +29,12 @@
       }
     },
     {
-      "id": "pythons-journey-to-multi-core-parallelism",
-      "group": 0,
-      "top_keywords": [
-        "gil",
-        "interpreter",
-        "struct"
-      ],
-      "metrics": {
-        "size": 899,
-        "date_score": 1.0,
-        "radius": 7
-      }
-    },
-    {
       "id": "functional-thinking-go-lambda-calculus",
-      "group": 4,
+      "group": 2,
       "top_keywords": [
         "church",
-        "function",
-        "functions"
+        "variables",
+        "function"
       ],
       "metrics": {
         "size": 1378,
@@ -58,7 +44,7 @@
     },
     {
       "id": "cli-and-sdk-in-mlops",
-      "group": 3,
+      "group": 0,
       "top_keywords": [
         "cli",
         "sdk",
@@ -85,6 +71,20 @@
       }
     },
     {
+      "id": "pythons-journey-to-native-multi-core-parallelism",
+      "group": 4,
+      "top_keywords": [
+        "gil",
+        "interpreter",
+        "own_gil"
+      ],
+      "metrics": {
+        "size": 839,
+        "date_score": 1.0,
+        "radius": 7
+      }
+    },
+    {
       "id": "from-manual-proto-hunting-to-buf-sanity",
       "group": 1,
       "top_keywords": [
@@ -99,12 +99,26 @@
       }
     },
     {
+      "id": "rust-says-hi-to-python",
+      "group": 4,
+      "top_keywords": [
+        "rust",
+        "python",
+        "pymessage"
+      ],
+      "metrics": {
+        "size": 1352,
+        "date_score": 1.0,
+        "radius": 8
+      }
+    },
+    {
       "id": "github-as-a-web-app-for-agile-development",
-      "group": 2,
+      "group": 3,
       "top_keywords": [
         "agile",
         "github",
-        "trigger"
+        "development"
       ],
       "metrics": {
         "size": 682,
@@ -118,6 +132,12 @@
       "source": "drawing-conclusions-excalidraw-work",
       "target": "building-xds-control-plane-python-embracing-dynamic-networking",
       "value": 0.345,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "drawing-conclusions-excalidraw-work",
+      "target": "rust-says-hi-to-python",
+      "value": 0.333,
       "rel_type": "semantic-match"
     },
     {
@@ -140,8 +160,32 @@
     },
     {
       "source": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "target": "rust-says-hi-to-python",
+      "value": 0.313,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
       "target": "github-as-a-web-app-for-agile-development",
       "value": 0.34,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "pythons-journey-to-native-multi-core-parallelism",
+      "target": "rust-says-hi-to-python",
+      "value": 0.417,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "from-manual-proto-hunting-to-buf-sanity",
+      "target": "rust-says-hi-to-python",
+      "value": 0.372,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "rust-says-hi-to-python",
+      "target": "github-as-a-web-app-for-agile-development",
+      "value": 0.411,
       "rel_type": "semantic-match"
     }
   ]
