@@ -1,9 +1,9 @@
 ---
-title: "Python’s Journey to Multi-Core Parallelism"
+title: "Python’s Journey to native Multi-Core Parallelism"
 author: eunsang
 pubDatetime: 2026-02-28T00:00:00Z
 modDatetime: 2026-02-28T00:00:00Z
-slug: pythons-journey-to-multi-core-parallelism
+slug: pythons-journey-to-native-multi-core-parallelism
 featured: false
 draft: false
 tags: ["python"]
@@ -121,12 +121,8 @@ By threading this `own_gil` variable through the lifecycle, Python ensures that 
 
 When a thread is created, the system now checks this flag. If `own_gil` is true, it initializes a private lock (`init_own_gil`) instead of pointing back to the main one.
 
-### Conclusion
+### The Bottom Line
 
-This refactoring was more than just a code cleanup; it was a massive technical debt repayment. By moving global variables and the lock itself into the PyInterpreterState, the community finally achieved Interpreter Isolation.
+This wasn't just a code cleanup—it was the removal of a decade-old architectural ceiling. Moving the GIL to the interpreter state finally delivers on the promise of isolated sub-interpreters.
 
-Before these changes, sub-interpreters were like people living in separate rooms but sharing a single, heavy front-door key. Now, each room can have its own key.
-
-This work was the essential "Phase 1." Without a Per-Interpreter GIL, the "Free-threaded" (No-GIL) mode introduced in Python 3.13 and polished in 3.14 would have been architecturally impossible. We have moved from a world where we had one security guard for a whole building, to a world where every apartment can hire its own.
-
-It is a quiet revolution. While most users won't see the C code, they will feel the results: a Python that finally stretches its wings across every core of a modern machine.
+Think of it as moving from a single-lane bridge to a multi-lane highway. This work laid the foundation for the No-GIL movement in Python 3.13+, transforming how Python handles concurrency. Most users won't see these C-level changes, but they will certainly feel the performance gains as Python finally scales across every available CPU core.
