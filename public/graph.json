@@ -1,20 +1,6 @@
 {
   "nodes": [
     {
-      "id": "drawing-conclusions-excalidraw-work",
-      "group": 3,
-      "top_keywords": [
-        "diagram",
-        "business",
-        "flow"
-      ],
-      "metrics": {
-        "size": 475,
-        "date_score": 1.0,
-        "radius": 6
-      }
-    },
-    {
       "id": "homoiconic-data-engineering-pipeline-as-code",
       "group": 2,
       "top_keywords": [
@@ -30,7 +16,7 @@
     },
     {
       "id": "functional-thinking-go-lambda-calculus",
-      "group": 2,
+      "group": 4,
       "top_keywords": [
         "church",
         "variables",
@@ -58,7 +44,7 @@
     },
     {
       "id": "building-xds-control-plane-python-embracing-dynamic-networking",
-      "group": 1,
+      "group": 3,
       "top_keywords": [
         "envoy",
         "server",
@@ -72,7 +58,7 @@
     },
     {
       "id": "pythons-journey-to-native-multi-core-parallelism",
-      "group": 4,
+      "group": 1,
       "top_keywords": [
         "gil",
         "interpreter",
@@ -86,7 +72,7 @@
     },
     {
       "id": "from-manual-proto-hunting-to-buf-sanity",
-      "group": 1,
+      "group": 3,
       "top_keywords": [
         "proto",
         "buf",
@@ -100,7 +86,7 @@
     },
     {
       "id": "rust-says-hi-to-python",
-      "group": 4,
+      "group": 1,
       "top_keywords": [
         "rust",
         "python",
@@ -114,7 +100,7 @@
     },
     {
       "id": "github-as-a-web-app-for-agile-development",
-      "group": 3,
+      "group": 1,
       "top_keywords": [
         "agile",
         "github",
@@ -128,24 +114,6 @@
     }
   ],
   "links": [
-    {
-      "source": "drawing-conclusions-excalidraw-work",
-      "target": "building-xds-control-plane-python-embracing-dynamic-networking",
-      "value": 0.345,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "drawing-conclusions-excalidraw-work",
-      "target": "rust-says-hi-to-python",
-      "value": 0.333,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "drawing-conclusions-excalidraw-work",
-      "target": "github-as-a-web-app-for-agile-development",
-      "value": 0.539,
-      "rel_type": "semantic-match"
-    },
     {
       "source": "homoiconic-data-engineering-pipeline-as-code",
       "target": "functional-thinking-go-lambda-calculus",
