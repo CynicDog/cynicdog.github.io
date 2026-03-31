@@ -16,7 +16,7 @@
     },
     {
       "id": "building-xds-control-plane-python-embracing-dynamic-networking",
-      "group": 3,
+      "group": 4,
       "top_keywords": [
         "envoy",
         "xds",
@@ -29,22 +29,8 @@
       }
     },
     {
-      "id": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
-      "group": 0,
-      "top_keywords": [
-        "job",
-        "nudge",
-        "asyncio"
-      ],
-      "metrics": {
-        "size": 1690,
-        "date_score": 1.0,
-        "radius": 9
-      }
-    },
-    {
       "id": "rust-says-hi-to-python",
-      "group": 0,
+      "group": 1,
       "top_keywords": [
         "rust",
         "python",
@@ -72,7 +58,7 @@
     },
     {
       "id": "from-manual-proto-hunting-to-buf-sanity",
-      "group": 3,
+      "group": 4,
       "top_keywords": [
         "proto",
         "buf",
@@ -85,8 +71,22 @@
       }
     },
     {
+      "id": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
+      "group": 1,
+      "top_keywords": [
+        "job",
+        "nudge",
+        "asyncio"
+      ],
+      "metrics": {
+        "size": 1690,
+        "date_score": 1.0,
+        "radius": 9
+      }
+    },
+    {
       "id": "github-as-a-web-app-for-agile-development",
-      "group": 0,
+      "group": 1,
       "top_keywords": [
         "agile",
         "github",
@@ -100,7 +100,7 @@
     },
     {
       "id": "homoiconic-data-engineering-pipeline-as-code",
-      "group": 1,
+      "group": 3,
       "top_keywords": [
         "data",
         "pipeline",
@@ -114,7 +114,7 @@
     },
     {
       "id": "functional-thinking-go-lambda-calculus",
-      "group": 4,
+      "group": 3,
       "top_keywords": [
         "church",
         "variables",
@@ -130,12 +130,6 @@
   "links": [
     {
       "source": "building-xds-control-plane-python-embracing-dynamic-networking",
-      "target": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
-      "value": 0.425,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
       "target": "rust-says-hi-to-python",
       "value": 0.313,
       "rel_type": "semantic-match"
@@ -148,26 +142,14 @@
     },
     {
       "source": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "target": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
+      "value": 0.425,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
       "target": "github-as-a-web-app-for-agile-development",
       "value": 0.34,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
-      "target": "rust-says-hi-to-python",
-      "value": 0.423,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
-      "target": "from-manual-proto-hunting-to-buf-sanity",
-      "value": 0.398,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
-      "target": "github-as-a-web-app-for-agile-development",
-      "value": 0.411,
       "rel_type": "semantic-match"
     },
     {
@@ -184,6 +166,24 @@
     },
     {
       "source": "rust-says-hi-to-python",
+      "target": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
+      "value": 0.423,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "rust-says-hi-to-python",
+      "target": "github-as-a-web-app-for-agile-development",
+      "value": 0.411,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "from-manual-proto-hunting-to-buf-sanity",
+      "target": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
+      "value": 0.398,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
       "target": "github-as-a-web-app-for-agile-development",
       "value": 0.411,
       "rel_type": "semantic-match"
