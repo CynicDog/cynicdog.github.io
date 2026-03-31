@@ -105,8 +105,6 @@ example, however, I separated them: the core Rust logic lives in `crates/greet`,
 depends on that crate and compiles it into a Python extension module. This structure was inspired by the scalable
 layout used in the `polars` project.
 
-You can introduce the code **briefly and clearly**, keeping the same explanatory tone as the rest of your post.
-
 ## The Implementation
 
 The Python-facing API is implemented using `PyO3` macros that expose Rust types and methods to Python.
