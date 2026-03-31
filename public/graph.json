@@ -1,36 +1,8 @@
 {
   "nodes": [
     {
-      "id": "homoiconic-data-engineering-pipeline-as-code",
-      "group": 2,
-      "top_keywords": [
-        "data",
-        "pipeline",
-        "declarative"
-      ],
-      "metrics": {
-        "size": 944,
-        "date_score": 1.0,
-        "radius": 7
-      }
-    },
-    {
-      "id": "functional-thinking-go-lambda-calculus",
-      "group": 4,
-      "top_keywords": [
-        "church",
-        "variables",
-        "function"
-      ],
-      "metrics": {
-        "size": 1378,
-        "date_score": 1.0,
-        "radius": 8
-      }
-    },
-    {
       "id": "cli-and-sdk-in-mlops",
-      "group": 0,
+      "group": 2,
       "top_keywords": [
         "cli",
         "sdk",
@@ -47,8 +19,8 @@
       "group": 3,
       "top_keywords": [
         "envoy",
-        "server",
-        "xds"
+        "xds",
+        "server"
       ],
       "metrics": {
         "size": 1115,
@@ -57,8 +29,36 @@
       }
     },
     {
+      "id": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
+      "group": 0,
+      "top_keywords": [
+        "job",
+        "nudge",
+        "asyncio"
+      ],
+      "metrics": {
+        "size": 1690,
+        "date_score": 1.0,
+        "radius": 9
+      }
+    },
+    {
+      "id": "rust-says-hi-to-python",
+      "group": 0,
+      "top_keywords": [
+        "rust",
+        "python",
+        "pymessage"
+      ],
+      "metrics": {
+        "size": 1294,
+        "date_score": 1.0,
+        "radius": 8
+      }
+    },
+    {
       "id": "pythons-journey-to-native-multi-core-parallelism",
-      "group": 1,
+      "group": 0,
       "top_keywords": [
         "gil",
         "interpreter",
@@ -85,22 +85,8 @@
       }
     },
     {
-      "id": "rust-says-hi-to-python",
-      "group": 1,
-      "top_keywords": [
-        "rust",
-        "python",
-        "pymessage"
-      ],
-      "metrics": {
-        "size": 1294,
-        "date_score": 1.0,
-        "radius": 8
-      }
-    },
-    {
       "id": "github-as-a-web-app-for-agile-development",
-      "group": 1,
+      "group": 0,
       "top_keywords": [
         "agile",
         "github",
@@ -111,19 +97,41 @@
         "date_score": 1.0,
         "radius": 6
       }
+    },
+    {
+      "id": "homoiconic-data-engineering-pipeline-as-code",
+      "group": 1,
+      "top_keywords": [
+        "data",
+        "pipeline",
+        "function"
+      ],
+      "metrics": {
+        "size": 944,
+        "date_score": 1.0,
+        "radius": 7
+      }
+    },
+    {
+      "id": "functional-thinking-go-lambda-calculus",
+      "group": 4,
+      "top_keywords": [
+        "church",
+        "variables",
+        "function"
+      ],
+      "metrics": {
+        "size": 1378,
+        "date_score": 1.0,
+        "radius": 8
+      }
     }
   ],
   "links": [
     {
-      "source": "homoiconic-data-engineering-pipeline-as-code",
-      "target": "functional-thinking-go-lambda-calculus",
-      "value": 0.357,
-      "rel_type": "semantic-match"
-    },
-    {
       "source": "building-xds-control-plane-python-embracing-dynamic-networking",
-      "target": "from-manual-proto-hunting-to-buf-sanity",
-      "value": 0.575,
+      "target": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
+      "value": 0.425,
       "rel_type": "semantic-match"
     },
     {
@@ -134,19 +142,43 @@
     },
     {
       "source": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "target": "from-manual-proto-hunting-to-buf-sanity",
+      "value": 0.575,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
       "target": "github-as-a-web-app-for-agile-development",
       "value": 0.34,
       "rel_type": "semantic-match"
     },
     {
-      "source": "pythons-journey-to-native-multi-core-parallelism",
+      "source": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
       "target": "rust-says-hi-to-python",
+      "value": 0.423,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
+      "target": "from-manual-proto-hunting-to-buf-sanity",
+      "value": 0.398,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "nudge-pattern-brokerless-job-queue-asyncio-threadpool",
+      "target": "github-as-a-web-app-for-agile-development",
+      "value": 0.411,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "rust-says-hi-to-python",
+      "target": "pythons-journey-to-native-multi-core-parallelism",
       "value": 0.417,
       "rel_type": "semantic-match"
     },
     {
-      "source": "from-manual-proto-hunting-to-buf-sanity",
-      "target": "rust-says-hi-to-python",
+      "source": "rust-says-hi-to-python",
+      "target": "from-manual-proto-hunting-to-buf-sanity",
       "value": 0.372,
       "rel_type": "semantic-match"
     },
@@ -154,6 +186,12 @@
       "source": "rust-says-hi-to-python",
       "target": "github-as-a-web-app-for-agile-development",
       "value": 0.411,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "homoiconic-data-engineering-pipeline-as-code",
+      "target": "functional-thinking-go-lambda-calculus",
+      "value": 0.357,
       "rel_type": "semantic-match"
     }
   ]
