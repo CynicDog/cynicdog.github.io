@@ -1,0 +1,381 @@
+---
+title: "Row Tracking in Delta Lake, Tested from Scratch"
+author: eunsang
+pubDatetime: 2026-04-18T00:00:00Z
+modDatetime: 2026-04-18T00:00:00Z
+slug: row-tracking-in-delta-kernel-rs
+featured: false
+draft: false
+tags: ["rust", "delta-lake", "open-source", "testing"]
+description: ""
+---
+
+I recently contributed to
+[delta-kernel-rs](https://github.com/delta-io/delta-kernel-rs),
+a Rust library that implements the Delta Lake protocol for connectors.
+The contribution was a set of integration tests for a protocol feature
+called **row tracking**. Before jumping into how the tests work, I want to
+spend some time explaining what row tracking solves and how it fits into
+the Delta protocol, because the design is genuinely elegant once you see
+the full picture.
+
+
+## Delta Tables Are Directories, Not Files
+
+A Delta table is not a single file you open and read. It is a directory of
+Parquet data files governed by a transaction log -- the `_delta_log/`
+folder. Every time data is committed, Delta writes new Parquet files and
+appends a JSON entry to the log declaring which files were added (and
+possibly which were removed).
+
+This architecture gives you transactional guarantees. Readers always see a
+consistent snapshot. Writers never corrupt existing data because they
+never modify files in place -- they only append new ones. The log is
+the source of truth, and the Parquet files are the payload it points to.
+
+But this design also means that the physical files underneath a table are
+not stable. A compaction job might rewrite three small files into one
+large file. An update might logically remove an old file and add a new
+one containing modified rows. The files are transient artifacts; the
+table's identity lives in the log.
+
+This raises a fundamental question: if files come and go, how do you
+refer to a specific row?
+
+
+## The Problem of Row Identity
+
+In a traditional row-oriented database, each row has a physical address --
+a page number and a slot offset. You can point at a row unambiguously.
+In a Delta table, you cannot. The Parquet file that held your row might
+have been rewritten during compaction. The row still exists logically, but
+its physical container changed.
+
+This matters most during operations like merge. When you say "update every
+row where `id = 42`," the engine needs to locate those rows, modify them,
+and write them back. Without stable identifiers, the engine must
+re-derive everything from the raw data each time. With stable identifiers,
+it can track which rows were touched and which weren't, enabling
+optimizations like incremental merge, targeted change data feed, and
+efficient row-level lineage.
+
+Row tracking addresses this by assigning every row a permanent, globally
+unique integer ID at write time. That ID follows the row through
+compaction, checkpointing, and log replay. Once assigned, it never changes.
+
+
+## The Mechanics of Row Tracking
+
+Row tracking operates at the file level, not the row level. When a commit
+adds Parquet files to the table, each file receives a starting integer
+called `baseRowId`. The rows inside that file are implicitly numbered
+sequentially from the base. A file with `baseRowId = 300` and 100 rows
+contains rows 300 through 399. The per-row ID is never stored explicitly
+in the Parquet data -- it is derived at read time from the file's
+`baseRowId` and each row's position within the file.
+
+Coordination between commits is handled by a single counter called
+`rowIdHighWaterMark`, stored as domain metadata in the commit log. It
+records the highest row ID assigned so far. When a new commit arrives, it
+reads the current watermark, assigns contiguous `baseRowId` ranges to its
+files starting from `watermark + 1`, and writes an updated watermark back
+to the log.
+
+There is a third field: `defaultRowCommitVersion`. It tags each file with
+the version of the commit that created it. This is not about identity but
+about lineage -- it records *when* these rows entered the table, which is
+useful for change tracking and time travel queries.
+
+These three values -- `baseRowId`, `rowIdHighWaterMark`, and
+`defaultRowCommitVersion` -- live in the commit JSON alongside the
+familiar add and remove actions. No changes to the Parquet files
+themselves, no additional storage overhead per row. The entire mechanism
+is metadata-only.
+
+
+## Walking Through Two Commits
+
+Consider an empty table with row tracking enabled. The watermark starts
+at -1.
+
+**Commit 1** adds two Parquet files. The first contains 3 rows, the second
+contains 3 rows. The engine reads the watermark (-1), assigns
+`baseRowId = 0` to the first file (rows 0, 1, 2) and `baseRowId = 3` to
+the second file (rows 3, 4, 5), then writes the updated watermark as 5.
+
+**Commit 2** adds one file with 2 rows. It reads the watermark (5),
+assigns `baseRowId = 6` (rows 6, 7), and writes the watermark as 7.
+
+The result is a clean, gapless sequence of IDs across both commits. Each
+file owns a contiguous range, and the ranges never overlap. If commit 1's
+files are later compacted into a single file, the compacted file carries
+forward the same base IDs so the row-level identifiers remain stable.
+
+This monotonic, counter-based design is what makes row tracking both
+simple and reliable. There is no complex coordination protocol, no
+distributed ID generation. A single watermark, read-then-increment, is
+all it takes.
+
+
+## Row ID vs. Row Index
+
+Delta kernel exposes two metadata columns that are related but distinct.
+
+**Row index** is file-local. It counts rows within a single Parquet file
+starting from 0. Every file's row index starts at 0 regardless of
+where that file sits in the table.
+
+**Row ID** is table-global. It equals `baseRowId + row_index`. Because
+each file has a unique `baseRowId` and row index counts from 0 within the
+file, this formula naturally produces globally unique, non-overlapping IDs
+without any per-row storage.
+
+When you request both columns in a scan, the distinction becomes concrete:
+row index resets for every file boundary, while row ID climbs
+monotonically across the entire table.
+
+
+## Opting In at the Protocol Level
+
+Row tracking is not enabled by default. It is a protocol-level table
+feature declared in `writerFeatures` at table creation time. Once declared,
+the Delta protocol does not allow removing it -- features are append-only.
+
+Enabling row tracking also requires the `domainMetadata` writer feature,
+because the watermark is stored as a domain metadata action under the
+`delta.rowTracking` domain. Domain metadata is Delta's namespacing
+mechanism for feature-specific state in the commit log, preventing
+different features from colliding with each other.
+
+In practice, creating a row-tracking table means declaring two writer
+features (`rowTracking` and `domainMetadata`) and setting configuration
+entries like `delta.enableRowTracking` and
+`delta.rowTracking.materializedRowIdColumnName`. Get any of these wrong
+and the feature is silently inactive -- which, as it turned out, was
+exactly the bug I found in the shared test utilities.
+
+
+## Durability Across Checkpoints and Compaction
+
+Delta's transaction log can grow large over time. To keep reads fast,
+Delta periodically writes a **checkpoint** -- a Parquet file that captures
+the full table state at a given version. After a checkpoint exists, readers
+can load it directly instead of replaying every JSON commit from the
+beginning.
+
+For row tracking, checkpoints pose a specific requirement: the `baseRowId`
+on every add action and the `rowIdHighWaterMark` in domain metadata must
+be faithfully preserved in the checkpoint. If they aren't, a reader that
+loads from the checkpoint would reconstruct different row IDs than a reader
+who replayed the full log, violating the core guarantee of stable
+identifiers.
+
+The same principle applies to **log compaction**, a mechanism that
+squashes multiple commit files into a single compacted JSON file. The
+compacted file must carry forward all row tracking metadata exactly as it
+appeared in the original commits. Any loss or corruption during
+compaction would cause ID drift.
+
+These durability requirements are not optional niceties -- they are
+protocol invariants. A correct implementation must preserve row tracking
+state through every log lifecycle event: normal commits, checkpointing,
+compaction, and snapshot loading.
+
+
+## Testing the Read Path
+
+With the concepts in place, here is where my contribution fits in. The
+test file `kernel/tests/row_tracking.rs` already had write-path tests
+that inspect raw commit JSON to verify `baseRowId`,
+`defaultRowCommitVersion`, and `rowIdHighWaterMark` are written correctly.
+My work adds six integration tests for the *read* path -- verifying that
+when you scan a table with `MetadataColumnSpec::RowId` in the schema, the
+engine returns the correct row IDs to the caller.
+
+Two helpers keep the tests focused on scenarios rather than scan mechanics.
+`read_row_id_scan` builds a scan that appends a `row_id` metadata column
+to the snapshot's schema and executes it:
+
+```rust
+fn read_row_id_scan(
+    snapshot: Arc<Snapshot>,
+    engine: Arc<dyn Engine>,
+) -> DeltaResult<Vec<RecordBatch>> {
+    let scan_schema = Arc::new(
+        snapshot
+            .schema()
+            .add_metadata_column("row_id", MetadataColumnSpec::RowId)?,
+    );
+    let scan = snapshot.scan_builder()
+        .with_schema(scan_schema)
+        .build()?;
+    read_scan(&scan, engine)
+}
+```
+
+`collect_row_ids` flattens the row ID column from all returned batches
+into a single vector:
+
+```rust
+fn collect_row_ids(batches: &[RecordBatch]) -> Vec<i64> {
+    batches.iter().flat_map(|b| {
+        b.column_by_name("row_id")
+            .expect("row_id column not found")
+            .as_primitive::<Int64Type>()
+            .values()
+            .to_vec()
+    }).collect()
+}
+```
+
+With these in hand, each test writes data, scans it back, and asserts on
+the collected IDs.
+
+
+### Basic Sequential IDs
+
+The simplest scenario: write one file with three rows, read them back,
+verify IDs are `[0, 1, 2]`.
+
+```rust
+let snapshot = Snapshot::builder_for(table_url.clone())
+    .build(engine.as_ref())?;
+let batches = read_row_id_scan(snapshot, engine)?;
+
+let mut row_ids = collect_row_ids(&batches);
+row_ids.sort_unstable();
+assert_eq!(row_ids, vec![0, 1, 2]);
+```
+
+If this fails, nothing downstream will hold. It establishes that the scan
+engine correctly derives row IDs from `baseRowId` at all.
+
+
+### Non-Overlapping IDs Across Files
+
+Two files written in a single commit -- one with 3 rows, one with 4. The
+test asserts two properties: the global ID set covers `0..7` with no
+duplicates, and each file's IDs form a contiguous block from its base:
+
+```rust
+assert_eq!(all_ids, (0i64..7).collect::<Vec<_>>());
+
+for batch in &batches {
+    let ids: Vec<i64> = /* extract row IDs from batch */;
+    let min = *ids.iter().min().unwrap();
+    let expected = (min..min + ids.len() as i64).collect::<Vec<_>>();
+    assert_eq!(ids, expected, "IDs within a file must be contiguous");
+}
+```
+
+This catches a class of bugs where the engine might assign overlapping
+`baseRowId` values to files within the same commit.
+
+
+### Global Uniqueness Across Commits
+
+Two separate transactions: commit 1 writes 3 rows, commit 2 writes 2.
+The assertion is simple -- all five IDs should be `[0, 1, 2, 3, 4]` with
+no gaps or duplicates. This validates that the watermark handoff between
+commits works correctly on the read side.
+
+
+### Surviving a Checkpoint
+
+This test writes data, creates a checkpoint, loads a fresh snapshot from
+the checkpoint, and verifies the same row IDs come back. Then it writes
+more data and verifies the new IDs continue from the watermark:
+
+```rust
+snapshot.checkpoint(mt_engine.as_ref())?;
+
+let fresh_snapshot = Snapshot::builder_for(table_url.clone())
+    .build(mt_engine.as_ref())?;
+let batches = read_row_id_scan(fresh_snapshot, mt_engine.clone())?;
+
+let mut ids_after_ckpt = collect_row_ids(&batches);
+ids_after_ckpt.sort_unstable();
+assert_eq!(ids_after_ckpt, vec![0, 1, 2]);
+
+// Write 2 more rows after checkpoint
+// ...
+assert_eq!(all_ids, vec![0, 1, 2, 3, 4]);
+```
+
+One implementation detail worth noting: this test runs on a multi-threaded
+Tokio runtime (`#[tokio::test(flavor = "multi_thread")]`). Delta's
+checkpoint code internally nests blocking calls in a way that deadlocks on
+a single-threaded executor. The test uses `TokioMultiThreadExecutor` for
+the checkpoint step while keeping the standard executor for writes,
+matching the rest of the test suite.
+
+
+### Row ID and Row Index Together
+
+Both metadata columns requested in a single scan. The test verifies their
+relationship directly: row index resets to 0 for each file, row ID equals
+`baseRowId + row_index`, and the combined set of row IDs is globally
+unique:
+
+```rust
+assert_eq!(
+    row_indexes,
+    (0..n).collect::<Vec<_>>(),
+    "Row index must reset to 0 for each file"
+);
+
+let base = *row_ids.iter().min().unwrap();
+assert_eq!(
+    row_ids,
+    (base..base + n).collect::<Vec<_>>(),
+    "Row IDs within a file must equal baseRowId + row_index"
+);
+```
+
+This is the test that makes the relationship between the two columns
+explicit and verifiable.
+
+
+### Log Compaction (Pending)
+
+The final test verifies row ID preservation through log compaction. It is
+written and ready but marked `#[ignore]` because log compaction support in
+delta-kernel-rs is still in progress, tracked in
+[issue #2337](https://github.com/delta-io/delta-kernel-rs/issues/2337).
+When compaction lands, the test will be there to catch regressions from
+day one.
+
+
+## Refactoring the Existing Tests
+
+Beyond the new read-path tests, I cleaned up the existing write-path
+tests. Seven of them created a table with a single `number: INTEGER`
+column by repeating the same schema construction inline. I extracted a
+`setup_number_table` helper that does this in one call, cutting around 60
+lines of repeated setup and making each test's intent visible at a glance.
+
+I also fixed a pair of configuration keys in the shared test utility
+(`test-utils/src/lib.rs`). The keys were written as
+`delta.materializedRowIdColumnName` and
+`delta.materializedRowCommitVersionColumnName`, missing the `rowTracking.`
+namespace prefix that the protocol requires. Without the correct prefix,
+the configuration was silently ignored, meaning test tables weren't
+actually configured the way the protocol specifies. A small diff, but the
+kind of thing that undermines every test that depends on it.
+
+
+## What I Took Away
+
+What made this contribution valuable to me was not the Rust code itself --
+the tests are straightforward once you understand the protocol. What was
+valuable was that writing them forced me to internalize the protocol.
+You cannot assert on a `rowIdHighWaterMark` without understanding why it
+exists. You cannot test checkpoint survival without understanding what
+checkpoints are required to preserve.
+
+Writing tests turned out to be one of the most effective ways to learn a
+system's invariants from the inside. You start by reading the spec, but
+you finish by encoding it.
+
+The full change is at
+[delta-io/delta-kernel-rs#2316](https://github.com/delta-io/delta-kernel-rs/pull/2316).
