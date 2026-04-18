@@ -1,50 +1,8 @@
 {
   "nodes": [
     {
-      "id": "cli-and-sdk-in-mlops",
-      "group": 2,
-      "top_keywords": [
-        "cli",
-        "sdk",
-        "ci"
-      ],
-      "metrics": {
-        "size": 1308,
-        "date_score": 1.0,
-        "radius": 8
-      }
-    },
-    {
-      "id": "building-xds-control-plane-python-embracing-dynamic-networking",
-      "group": 4,
-      "top_keywords": [
-        "envoy",
-        "xds",
-        "server"
-      ],
-      "metrics": {
-        "size": 1115,
-        "date_score": 1.0,
-        "radius": 7
-      }
-    },
-    {
-      "id": "rust-says-hi-to-python",
-      "group": 1,
-      "top_keywords": [
-        "rust",
-        "python",
-        "pymessage"
-      ],
-      "metrics": {
-        "size": 1294,
-        "date_score": 1.0,
-        "radius": 8
-      }
-    },
-    {
       "id": "pythons-journey-to-native-multi-core-parallelism",
-      "group": 0,
+      "group": 2,
       "top_keywords": [
         "gil",
         "interpreter",
@@ -57,36 +15,50 @@
       }
     },
     {
-      "id": "from-manual-proto-hunting-to-buf-sanity",
+      "id": "row-tracking-in-delta-kernel-rs",
       "group": 4,
       "top_keywords": [
-        "proto",
-        "buf",
-        "grpc"
+        "row",
+        "ids",
+        "file"
       ],
       "metrics": {
-        "size": 653,
+        "size": 2183,
         "date_score": 1.0,
-        "radius": 6
+        "radius": 10
       }
     },
     {
-      "id": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
-      "group": 1,
+      "id": "cli-and-sdk-in-mlops",
+      "group": 4,
       "top_keywords": [
-        "job",
-        "nudge",
-        "asyncio"
+        "cli",
+        "sdk",
+        "ci"
       ],
       "metrics": {
-        "size": 1690,
+        "size": 1308,
         "date_score": 1.0,
-        "radius": 9
+        "radius": 8
+      }
+    },
+    {
+      "id": "functional-thinking-go-lambda-calculus",
+      "group": 0,
+      "top_keywords": [
+        "church",
+        "variables",
+        "function"
+      ],
+      "metrics": {
+        "size": 1378,
+        "date_score": 1.0,
+        "radius": 8
       }
     },
     {
       "id": "github-as-a-web-app-for-agile-development",
-      "group": 1,
+      "group": 3,
       "top_keywords": [
         "agile",
         "github",
@@ -99,8 +71,22 @@
       }
     },
     {
-      "id": "homoiconic-data-engineering-pipeline-as-code",
+      "id": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
       "group": 3,
+      "top_keywords": [
+        "job",
+        "nudge",
+        "asyncio"
+      ],
+      "metrics": {
+        "size": 1690,
+        "date_score": 1.0,
+        "radius": 9
+      }
+    },
+    {
+      "id": "homoiconic-data-engineering-pipeline-as-code",
+      "group": 4,
       "top_keywords": [
         "data",
         "pipeline",
@@ -113,49 +99,113 @@
       }
     },
     {
-      "id": "functional-thinking-go-lambda-calculus",
+      "id": "rust-says-hi-to-python",
       "group": 3,
       "top_keywords": [
-        "church",
-        "variables",
-        "function"
+        "python",
+        "rust",
+        "pymessage"
       ],
       "metrics": {
-        "size": 1378,
+        "size": 1294,
         "date_score": 1.0,
         "radius": 8
+      }
+    },
+    {
+      "id": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "group": 1,
+      "top_keywords": [
+        "envoy",
+        "xds",
+        "server"
+      ],
+      "metrics": {
+        "size": 1115,
+        "date_score": 1.0,
+        "radius": 7
+      }
+    },
+    {
+      "id": "from-manual-proto-hunting-to-buf-sanity",
+      "group": 1,
+      "top_keywords": [
+        "proto",
+        "buf",
+        "grpc"
+      ],
+      "metrics": {
+        "size": 653,
+        "date_score": 1.0,
+        "radius": 6
       }
     }
   ],
   "links": [
     {
-      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "source": "pythons-journey-to-native-multi-core-parallelism",
       "target": "rust-says-hi-to-python",
-      "value": 0.313,
+      "value": 0.417,
       "rel_type": "semantic-match"
     },
     {
-      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "source": "row-tracking-in-delta-kernel-rs",
+      "target": "homoiconic-data-engineering-pipeline-as-code",
+      "value": 0.411,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "row-tracking-in-delta-kernel-rs",
       "target": "from-manual-proto-hunting-to-buf-sanity",
-      "value": 0.575,
+      "value": 0.395,
       "rel_type": "semantic-match"
     },
     {
-      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "source": "functional-thinking-go-lambda-calculus",
+      "target": "homoiconic-data-engineering-pipeline-as-code",
+      "value": 0.357,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "github-as-a-web-app-for-agile-development",
       "target": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
-      "value": 0.425,
+      "value": 0.411,
       "rel_type": "semantic-match"
     },
     {
-      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
-      "target": "github-as-a-web-app-for-agile-development",
+      "source": "github-as-a-web-app-for-agile-development",
+      "target": "rust-says-hi-to-python",
+      "value": 0.411,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "github-as-a-web-app-for-agile-development",
+      "target": "building-xds-control-plane-python-embracing-dynamic-networking",
       "value": 0.34,
       "rel_type": "semantic-match"
     },
     {
+      "source": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
+      "target": "rust-says-hi-to-python",
+      "value": 0.423,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
+      "target": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "value": 0.425,
+      "rel_type": "semantic-match"
+    },
+    {
+      "source": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
+      "target": "from-manual-proto-hunting-to-buf-sanity",
+      "value": 0.398,
+      "rel_type": "semantic-match"
+    },
+    {
       "source": "rust-says-hi-to-python",
-      "target": "pythons-journey-to-native-multi-core-parallelism",
-      "value": 0.417,
+      "target": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "value": 0.313,
       "rel_type": "semantic-match"
     },
     {
@@ -165,33 +215,9 @@
       "rel_type": "semantic-match"
     },
     {
-      "source": "rust-says-hi-to-python",
-      "target": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
-      "value": 0.423,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "rust-says-hi-to-python",
-      "target": "github-as-a-web-app-for-agile-development",
-      "value": 0.411,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "from-manual-proto-hunting-to-buf-sanity",
-      "target": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
-      "value": 0.398,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "nudge-pattern-brokerless-jobs-in-python-with-asyncio-and-threadpool",
-      "target": "github-as-a-web-app-for-agile-development",
-      "value": 0.411,
-      "rel_type": "semantic-match"
-    },
-    {
-      "source": "homoiconic-data-engineering-pipeline-as-code",
-      "target": "functional-thinking-go-lambda-calculus",
-      "value": 0.357,
+      "source": "building-xds-control-plane-python-embracing-dynamic-networking",
+      "target": "from-manual-proto-hunting-to-buf-sanity",
+      "value": 0.575,
       "rel_type": "semantic-match"
     }
   ]
